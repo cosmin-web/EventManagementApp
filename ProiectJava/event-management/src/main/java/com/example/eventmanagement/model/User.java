@@ -1,0 +1,67 @@
+package com.example.eventmanagement.model;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "utilizatori")
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private String parola;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role rol;
+
+    public enum Role {
+        ADMIN, OWNER_EVENT, CLIENT
+    }
+
+    public User() {}
+
+    public User(Integer id, String email, String parola, Role rol) {
+        this.id = id;
+        this.email = email;
+        this.parola = parola;
+        this.rol = rol;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getParola() {
+        return parola;
+    }
+
+    public void setParola(String parola) {
+        this.parola = parola;
+    }
+
+    public Role getRol() {
+        return rol;
+    }
+
+    public void setRol(Role rol) {
+        this.rol = rol;
+    }
+}
