@@ -11,7 +11,7 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "pachet_id")
-    private Package pachet;
+    private PackageEntity pachet;
 
     @ManyToOne
     @JoinColumn(name = "eveniment_id")
@@ -19,7 +19,7 @@ public class Ticket {
 
     public Ticket() {}
 
-    public Ticket(String cod, Package pachet, Event eveniment) {
+    public Ticket(String cod, PackageEntity pachet, Event eveniment) {
         this.cod = cod;
         this.pachet = pachet;
         this.eveniment = eveniment;
@@ -33,11 +33,11 @@ public class Ticket {
         this.cod = cod;
     }
 
-    public Package getPachet() {
+    public PackageEntity getPachet() {
         return pachet;
     }
 
-    public void setPachet(Package pachet) {
+    public void setPachet(PackageEntity pachet) {
         this.pachet = pachet;
     }
 

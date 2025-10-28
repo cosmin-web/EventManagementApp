@@ -10,7 +10,7 @@ public class PackageEvent {
     @Id
     @ManyToOne
     @JoinColumn(name = "pachet_id", nullable = false)
-    private Package pachet;
+    private PackageEntity pachet;
 
     @Id
     @ManyToOne
@@ -21,17 +21,17 @@ public class PackageEvent {
 
     public PackageEvent() {}
 
-    public PackageEvent(Package pachet, Event eveniment, Integer numarLocuri) {
+    public PackageEvent(PackageEntity pachet, Event eveniment, Integer numarLocuri) {
         this.pachet = pachet;
         this.eveniment = eveniment;
         this.numarLocuri = numarLocuri;
     }
 
-    public Package getPachet() {
+    public PackageEntity getPachet() {
         return pachet;
     }
 
-    public void setPachet(Package pachet) {
+    public void setPachet(PackageEntity pachet) {
         this.pachet = pachet;
     }
 

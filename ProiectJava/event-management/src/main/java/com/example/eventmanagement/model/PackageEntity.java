@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "pachete")
-public class Package {
+public class PackageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +20,9 @@ public class Package {
     private String locatie;
     private String descriere;
 
-    public Package() {}
+    public PackageEntity() {}
 
-    public Package(Integer id, User owner, String nume, String locatie, String descriere) {
+    public PackageEntity(Integer id, User owner, String nume, String locatie, String descriere) {
         this.id = id;
         this.owner = owner;
         this.nume = nume;
