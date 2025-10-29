@@ -25,6 +25,14 @@ public class PackageEventService {
         return packageEventRepository.findById(new PackageEventId(pachet.getId(), eveniment.getId()));
     }
 
+    public List<PackageEvent> getPackagesForEvent(Event eveniment) {
+        return packageEventRepository.findByEvent(eveniment);
+    }
+
+    public List<PackageEvent> getEventsForPackage(PackageEntity pachet) {
+        return packageEventRepository.findByPachet(pachet);
+    }
+
     public PackageEvent addEventToPackage(PackageEntity pachet, Event eveniment, Integer numarLocuri) {
         PackageEvent relation = new PackageEvent(pachet, eveniment, numarLocuri);
         return packageEventRepository.save(relation);
