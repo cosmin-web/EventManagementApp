@@ -3,14 +3,14 @@ package com.example.eventmanagement.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class PackageEventId implements Serializable {
+public class PackageEventIdEntity implements Serializable {
 
     private Integer pachet;
     private Integer eveniment;
 
-    public PackageEventId() {}
+    public PackageEventIdEntity() {}
 
-    public PackageEventId(Integer pachet, Integer eveniment) {
+    public PackageEventIdEntity(Integer pachet, Integer eveniment) {
         this.pachet = pachet;
         this.eveniment = eveniment;
     }
@@ -34,8 +34,8 @@ public class PackageEventId implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PackageEventId)) return false;
-        PackageEventId that = (PackageEventId) o;
+        if (!(o instanceof PackageEventIdEntity)) return false;
+        PackageEventIdEntity that = (PackageEventIdEntity) o;
         return Objects.equals(pachet, that.pachet) && Objects.equals(eveniment, that.eveniment);
     }
 

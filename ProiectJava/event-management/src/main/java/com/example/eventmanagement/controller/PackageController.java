@@ -1,8 +1,13 @@
 package com.example.eventmanagement.controller;
 
+import com.example.eventmanagement.dto.PackageDTO;
+import com.example.eventmanagement.mapper.PackageMapper;
 import com.example.eventmanagement.model.PackageEntity;
+import com.example.eventmanagement.model.UserEntity;
 import com.example.eventmanagement.service.PackageService;
+import com.example.eventmanagement.service.UserService;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +25,10 @@ public class PackageController {
     @Autowired
     private PackageService packageService;
 
-    private Map<String, Object> wrapWithLinks(Object data, Map<String, String> links) {
+    @Autowired
+    private UserService userService;
+
+    private Map<String, Object> wrap(Object data, Map<String, String> links) {
         Map<String, Object> resp = new LinkedHashMap<>();
         resp.put("data", data);
         resp.put("links", links);
@@ -29,7 +37,7 @@ public class PackageController {
 
     private Map<String, String> packageLinks(Integer id) {
         return Map.of(
-          "self", "/api/event-manager/event-packets" + id,
+          "self", "/api/event-manager/event-packets/" + id,
           "parent", "/api/event-manager/event-packets"
         );
     }
@@ -37,33 +45,47 @@ public class PackageController {
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> getAllPackages() {
         var list = packageService.getAllPackages().stream()
-                .map(p-> wrapWithLinks(p, packageLinks(p.getId())))
+                .map(PackageMapper::fromEntity)
+                .map(dto -> wrap(dto, packageLinks(dto.getId())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getPackageById(@PathVariable Integer id) {
         return packageService.getPackageById(id)
-                .map(p->ResponseEntity.ok(wrapWithLinks(p, packageLinks(p.getId()))))
+                .map(PackageMapper::fromEntity)
+                .map(dto->ResponseEntity.ok(wrap(dto, packageLinks(dto.getId()))))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createPackage(@RequestBody PackageEntity p) {
-        PackageEntity saved = packageService.createPackages(p);
+    public ResponseEntity<Map<String, Object>> createPackage(@RequestBody @Valid PackageDTO dto) {
+        UserEntity owner = userService.getUserById(dto.getOwnerId())
+                .orElseThrow(()->new IllegalArgumentException("Prorpietarul nu exista"));
+
+        PackageEntity entity = PackageMapper.toEntity(dto, owner);
+        PackageEntity saved = packageService.createPackages(entity);
+        PackageDTO response = PackageMapper.fromEntity(saved);
+
         return ResponseEntity.created(URI.create("/api/event-manager/event-packets/" + saved.getId()))
-                .body(wrapWithLinks(saved, packageLinks(saved.getId())));
+                .body(wrap(response, packageLinks(saved.getId())));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updatePackage(@PathVariable Integer id, @RequestBody PackageEntity p) {
-        PackageEntity updated = packageService.updatePackage(id, p);
-        return ResponseEntity.ok(wrapWithLinks(updated, packageLinks(updated.getId())));
+    public ResponseEntity<Map<String, Object>> updatePackage(@PathVariable Integer id, @RequestBody @Valid PackageDTO dto) {
+        UserEntity owner = userService.getUserById(dto.getOwnerId())
+                .orElseThrow(() -> new IllegalArgumentException("Proprietarul nu exista"));
+
+        PackageEntity entity = PackageMapper.toEntity(dto, owner);
+        PackageEntity updated = packageService.updatePackage(id, entity);
+        PackageDTO response = PackageMapper.fromEntity(updated);
+
+        return ResponseEntity.ok(wrap(response, packageLinks(updated.getId())));
     }
 
     @DeleteMapping("/{id}")
-    public  ResponseEntity<Void> deletePackage(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletePackage(@PathVariable Integer id) {
         packageService.deletePackage(id);
         return ResponseEntity.noContent().build();
     }

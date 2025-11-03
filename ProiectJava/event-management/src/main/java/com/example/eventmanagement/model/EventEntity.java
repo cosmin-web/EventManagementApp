@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "evenimente")
-public class Event {
+public class EventEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,7 +12,7 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name = "id_owner", nullable = false)
-    private User owner;
+    private UserEntity owner;
 
     @Column(nullable = false, unique = true)
     private String nume;
@@ -23,9 +23,9 @@ public class Event {
     @Column(name = "numarLocuri")
     private Integer numarLocuri;
 
-    public Event() {}
+    public EventEntity() {}
 
-    public Event(Integer id, User owner, String nume, String locatie, String descriere, Integer numarLocuri) {
+    public EventEntity(Integer id, UserEntity owner, String nume, String locatie, String descriere, Integer numarLocuri) {
         this.id = id;
         this.owner = owner;
         this.nume = nume;
@@ -42,11 +42,11 @@ public class Event {
         this.id = id;
     }
 
-    public User getOwner() {
+    public UserEntity getOwner() {
         return owner;
     }
 
-    public void setOwner(User owner) {
+    public void setOwner(UserEntity owner) {
         this.owner = owner;
     }
 

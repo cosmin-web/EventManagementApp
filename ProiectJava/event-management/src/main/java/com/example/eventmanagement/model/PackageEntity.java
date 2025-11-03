@@ -12,7 +12,7 @@ public class PackageEntity {
 
     @ManyToOne
     @JoinColumn(name = "id_owner", nullable = false)
-    private User owner;
+    private UserEntity owner;
 
     @Column(nullable = false, unique = true)
     private String nume;
@@ -22,7 +22,7 @@ public class PackageEntity {
 
     public PackageEntity() {}
 
-    public PackageEntity(Integer id, User owner, String nume, String locatie, String descriere) {
+    public PackageEntity(Integer id, UserEntity owner, String nume, String locatie, String descriere) {
         this.id = id;
         this.owner = owner;
         this.nume = nume;
@@ -38,11 +38,11 @@ public class PackageEntity {
         this.id = id;
     }
 
-    public User getOwner() {
+    public UserEntity getOwner() {
         return owner;
     }
 
-    public void setOwner(User owner) {
+    public void setOwner(UserEntity owner) {
         this.owner = owner;
     }
 

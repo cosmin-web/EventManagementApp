@@ -1,8 +1,8 @@
 package com.example.eventmanagement.controller;
 
-import com.example.eventmanagement.model.Event;
+import com.example.eventmanagement.model.EventEntity;
 import com.example.eventmanagement.model.PackageEntity;
-import com.example.eventmanagement.model.Ticket;
+import com.example.eventmanagement.model.TicketEntity;
 import com.example.eventmanagement.service.EventService;
 import com.example.eventmanagement.service.PackageService;
 import com.example.eventmanagement.service.TicketService;
@@ -30,7 +30,7 @@ public class TicketController {
     @Autowired
     private PackageService packageService;
 
-    private Map<String, Object> wrapWithLinks(Object data, Map<String, String> links) {
+    private Map<String, Object> wrap(Object data, Map<String, String> links) {
         Map<String, Object> resp = new LinkedHashMap<>();
         resp.put("data", data);
         resp.put("links", links);
@@ -47,29 +47,25 @@ public class TicketController {
     @GetMapping("/tickets")
     public ResponseEntity<List<Map<String, Object>>> getAllTickets() {
         var list = ticketService.getAllTickets().stream()
-                .map(t->wrapWithLinks(t, ticketLinks(t.getCod())))
+                .map(t -> wrap(t, ticketLinks(t.getCod())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("tickets/{cod}")
     public ResponseEntity<Map<String, Object>> getTicketByCod(@PathVariable String cod) {
-        Optional<Ticket> optional = ticketService.getTicketByCode(cod);
-        if (optional.isPresent()) {
-            Ticket t = optional.get();
-            return ResponseEntity.ok(wrapWithLinks(t, ticketLinks(t.getCod())));
-        } else {
-            return ResponseEntity.status(404).body(Map.of("error", "Biletul nu exista"));
-        }
+        return ticketService.getTicketByCode(cod)
+                .map(t -> ResponseEntity.ok(wrap(t, ticketLinks(t.getCod()))))
+                .orElse(ResponseEntity.status(404).body(Map.of("error", "Biletul nu exista")));
     }
 
     @GetMapping("/events/{eventId}/tickets")
     public ResponseEntity<List<Map<String, Object>>> getAllTicketsFromEvent(@PathVariable Integer eventId) {
-        Event eveniment = eventService.getEventById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("Acest eveniment nu exista"));
+        EventEntity eveniment = eventService.getEventById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista."));
 
         var list = ticketService.getTicketsByEvent(eveniment).stream()
-                .map(t->wrapWithLinks(t, ticketLinks(t.getCod())))
+                .map(t -> wrap(t, ticketLinks(t.getCod())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
@@ -77,34 +73,49 @@ public class TicketController {
     @GetMapping("/event-packets/{packetId}/tickets")
     public ResponseEntity<List<Map<String, Object>>> getAllTicketsFromPackage(@PathVariable Integer packetId) {
         PackageEntity pachet = packageService.getPackageById(packetId)
-                .orElseThrow(()-> new IllegalArgumentException("Acest pachet nu exista"));
+                .orElseThrow(() -> new IllegalArgumentException("Acest pachet nu exista"));
+
+        var evenimente = packageService.getEventsForPackage(pachet).stream()
+                .map(pe -> Map.of(
+                        "id", pe.getEveniment().getId(),
+                        "nume", pe.getEveniment().getNume(),
+                        "locatie", pe.getEveniment().getLocatie(),
+                        "descriere", pe.getEveniment().getDescriere(),
+                        "numarLocuri", pe.getNumarLocuri()
+                ))
+                .toList();
 
         var list = ticketService.getTicketsByPackage(pachet).stream()
-                .map(t->wrapWithLinks(t, ticketLinks(t.getCod())))
-                .collect(Collectors.toList());
+                .map(t -> {
+                    Map<String, Object> data = new LinkedHashMap<>();
+                    data.put("cod", t.getCod());
+                    data.put("pachet", Map.of(
+                            "id", pachet.getId(),
+                            "nume", pachet.getNume(),
+                            "locatie", pachet.getLocatie(),
+                            "descriere", pachet.getDescriere()
+                    ));
+                    data.put("evenimenteIncluse", evenimente);
+                    return wrap(data, ticketLinks(t.getCod()));
+                })
+                .toList();
+
         return ResponseEntity.ok(list);
     }
 
+
     @PostMapping("/events/{eventId}/tickets")
     public ResponseEntity<Map<String, Object>> createTicketForEvent(@PathVariable Integer eventId) {
-        Event eveniment = eventService.getEventById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("Acest eveniment nu exista"));
-
-        Ticket ticket = ticketService.createTicketForEvent(eveniment.getId());
-
-        return ResponseEntity.created(URI.create("/api/event-manager/events/" + eventId + "/tickets"))
-                .body(wrapWithLinks(ticket, ticketLinks(ticket.getCod())));
+        TicketEntity ticket = ticketService.createTicketForEvent(eventId);
+        return ResponseEntity.created(URI.create("/api/event-manager/tickets/" + ticket.getCod()))
+                .body(wrap(ticket, ticketLinks(ticket.getCod())));
     }
 
     @PostMapping("/event-packets/{packetId}/tickets")
     public ResponseEntity<Map<String, Object>> createTicketForPackage(@PathVariable Integer packetId) {
-        PackageEntity pachet = packageService.getPackageById(packetId)
-                .orElseThrow(() -> new IllegalArgumentException("Acest pachet nu exista"));
-
-        Ticket ticket = ticketService.createTicketForPackage(packetId);
-
-        return ResponseEntity.created(URI.create("/api/event-manager/event-packets/" + packetId + "/tickets"))
-                .body(wrapWithLinks(ticket, ticketLinks(ticket.getCod())));
+        TicketEntity ticket = ticketService.createTicketForPackage(packetId);
+        return ResponseEntity.created(URI.create("/api/event-manager/tickets/" + ticket.getCod()))
+                .body(wrap(ticket, ticketLinks(ticket.getCod())));
     }
 
     @DeleteMapping("/tickets/{cod}")

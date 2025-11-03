@@ -1,6 +1,6 @@
 package com.example.eventmanagement.service;
 
-import com.example.eventmanagement.model.User;
+import com.example.eventmanagement.model.UserEntity;
 import com.example.eventmanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,26 +14,26 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> getAllUsers() {
+    public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Integer id) {
+    public Optional<UserEntity> getUserById(Integer id) {
         return userRepository.findById(id);
     }
 
-    public Optional<User> getUserByEmail(String email) {
+    public Optional<UserEntity> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    public User createUser(User user) {
+    public UserEntity createUser(UserEntity user) {
         if(userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Emailul este deja utilizat.");
         }
         return userRepository.save(user);
     }
 
-    public User updateUser(Integer id, User updatedUser) {
+    public UserEntity updateUser(Integer id, UserEntity updatedUser) {
         return userRepository.findById(id)
                 .map(user -> {
                     user.setEmail(updatedUser.getEmail());

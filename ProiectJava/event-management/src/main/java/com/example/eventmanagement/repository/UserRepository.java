@@ -1,13 +1,13 @@
 package com.example.eventmanagement.repository;
 
-import com.example.eventmanagement.model.User;
+import com.example.eventmanagement.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.*;
 
-public interface UserRepository extends JpaRepository<User, Integer>
+public interface UserRepository extends JpaRepository<UserEntity, Integer>
 {
-    Optional<User> findByEmail(String email);
-    List<User> findByRol(User.Role rol);
+    Optional<UserEntity> findByEmail(String email);
+    List<UserEntity> findByRol(UserEntity.Role rol);
     boolean existsByEmail(String email);
 }

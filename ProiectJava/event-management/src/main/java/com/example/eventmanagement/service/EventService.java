@@ -1,6 +1,6 @@
 package com.example.eventmanagement.service;
 
-import com.example.eventmanagement.model.Event;
+import com.example.eventmanagement.model.EventEntity;
 import com.example.eventmanagement.model.PackageEvent;
 import com.example.eventmanagement.repository.EventRepository;
 import com.example.eventmanagement.repository.PackageEventRepository;
@@ -19,22 +19,22 @@ public class EventService {
     @Autowired
     private PackageEventRepository packageEventRepository;
 
-    public List<Event> getAllEvents() {
+    public List<EventEntity> getAllEvents() {
         return eventRepository.findAll();
     }
 
-    public Optional<Event> getEventById(Integer id) {
+    public Optional<EventEntity> getEventById(Integer id) {
         return eventRepository.findById(id);
     }
 
-    public Event createEvent(Event event) {
+    public EventEntity createEvent(EventEntity event) {
         if(event.getNumarLocuri() == null || event.getNumarLocuri() <= 0) {
             throw new IllegalArgumentException("Numarul de locuri trebuie sa fie mai mare decat 0");
         }
         return eventRepository.save(event);
     }
 
-    public Event updateEvent(Integer id, Event updatedEvent) {
+    public EventEntity updateEvent(Integer id, EventEntity updatedEvent) {
         return eventRepository.findById(id)
                 .map(event -> {
                     event.setNume(updatedEvent.getNume());
@@ -46,14 +46,14 @@ public class EventService {
     }
 
     public void deleteEvent(Integer id) {
-        Event event = eventRepository.findById(id)
+        EventEntity event = eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista."));
 
         packageEventRepository.deleteByEveniment(event);
         eventRepository.delete(event);
     }
 
-    public List<PackageEvent> getPackagesForEvent(Event event) {
-        return packageEventRepository.findByEvent(event);
+    public List<PackageEvent> getPackagesForEvent(EventEntity event) {
+        return packageEventRepository.findByEveniment(event);
     }
 }

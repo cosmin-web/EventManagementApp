@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "bilete")
-public class Ticket {
+public class TicketEntity {
 
     @Id
     private String cod;
@@ -15,11 +15,11 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "eveniment_id")
-    private Event eveniment;
+    private EventEntity eveniment;
 
-    public Ticket() {}
+    public TicketEntity() {}
 
-    public Ticket(String cod, PackageEntity pachet, Event eveniment) {
+    public TicketEntity(String cod, PackageEntity pachet, EventEntity eveniment) {
         this.cod = cod;
         this.pachet = pachet;
         this.eveniment = eveniment;
@@ -41,11 +41,11 @@ public class Ticket {
         this.pachet = pachet;
     }
 
-    public Event getEveniment() {
+    public EventEntity getEveniment() {
         return eveniment;
     }
 
-    public void setEveniment(Event eveniment) {
+    public void setEveniment(EventEntity eveniment) {
         this.eveniment = eveniment;
     }
 }

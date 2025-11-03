@@ -1,16 +1,16 @@
 package com.example.eventmanagement.repository;
 
-import com.example.eventmanagement.model.Event;
-import com.example.eventmanagement.model.User;
+import com.example.eventmanagement.model.EventEntity;
+import com.example.eventmanagement.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface EventRepository extends JpaRepository<Event, Integer>
+public interface EventRepository extends JpaRepository<EventEntity, Integer>
 {
-    List<Event> findByOwner(User owner);
-    List<Event> findByNumeContainingIgnoreCase(String nume);
-    List<Event> findByLocatieContainingIgnoreCase(String locatie);
-    List<Event> findByDescriereContainingIgnoreCase(String descriere);
-    List<Event> findByNumarLocuri(Integer numarLocuri);
+    List<EventEntity> findByOwner(UserEntity owner);
+    List<EventEntity> findByNumeContainingIgnoreCase(String nume);
+    List<EventEntity> findByLocatieContainingIgnoreCase(String locatie);
+    List<EventEntity> findByDescriereContainingIgnoreCase(String descriere);
+    List<EventEntity> findByNumarLocuri(Integer numarLocuri);
 }

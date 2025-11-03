@@ -1,17 +1,20 @@
 package com.example.eventmanagement.service;
 
-import com.example.eventmanagement.model.Event;
+import com.example.eventmanagement.model.EventEntity;
 import com.example.eventmanagement.model.PackageEntity;
 import com.example.eventmanagement.model.PackageEvent;
-import com.example.eventmanagement.model.PackageEventId;
+import com.example.eventmanagement.model.PackageEventIdEntity;
 import com.example.eventmanagement.repository.PackageEventRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
+@Transactional
 public class PackageEventService {
 
     @Autowired
@@ -21,24 +24,25 @@ public class PackageEventService {
         return packageEventRepository.findAll();
     }
 
-    public Optional<PackageEvent> getRelation(PackageEntity pachet, Event eveniment) {
-        return packageEventRepository.findById(new PackageEventId(pachet.getId(), eveniment.getId()));
+    public Optional<PackageEvent> getRelation(PackageEntity pachet, EventEntity eveniment) {
+        return packageEventRepository.findById(new PackageEventIdEntity(pachet.getId(), eveniment.getId()));
     }
 
-    public List<PackageEvent> getPackagesForEvent(Event eveniment) {
-        return packageEventRepository.findByEvent(eveniment);
+    public List<PackageEvent> getPackagesForEvent(EventEntity eveniment) {
+        return packageEventRepository.findByEveniment(eveniment);
     }
 
     public List<PackageEvent> getEventsForPackage(PackageEntity pachet) {
         return packageEventRepository.findByPachet(pachet);
     }
 
-    public PackageEvent addEventToPackage(PackageEntity pachet, Event eveniment, Integer numarLocuri) {
+    public PackageEvent addEventToPackage(PackageEntity pachet, EventEntity eveniment, Integer numarLocuri) {
         PackageEvent relation = new PackageEvent(pachet, eveniment, numarLocuri);
         return packageEventRepository.save(relation);
     }
 
-    public void removeEventFromPackage(PackageEntity pachet, Event eveniment) {
+
+    public void removeEventFromPackage(PackageEntity pachet, EventEntity eveniment) {
         packageEventRepository.deleteByPachetAndEveniment(pachet, eveniment);
     }
 
@@ -46,7 +50,7 @@ public class PackageEventService {
         return packageEventRepository.findByPachet(pachet);
     }
 
-    public List<PackageEvent> findByEvent(Event eveniment) {
-        return packageEventRepository.findByEvent(eveniment);
+    public List<PackageEvent> findByEvent(EventEntity eveniment) {
+        return packageEventRepository.findByEveniment(eveniment);
     }
 }

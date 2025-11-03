@@ -1,0 +1,30 @@
+package com.example.eventmanagement.mapper;
+
+import com.example.eventmanagement.dto.PackageDTO;
+import com.example.eventmanagement.model.PackageEntity;
+import com.example.eventmanagement.model.UserEntity;
+
+public class PackageMapper {
+
+    public static PackageDTO fromEntity(PackageEntity entity) {
+        if(entity == null) return null;
+
+        return new PackageDTO(
+                entity.getId(),
+                entity.getOwner().getId(),
+                entity.getNume(),
+                entity.getLocatie(),
+                entity.getDescriere()
+        );
+    }
+
+    public static PackageEntity toEntity(PackageDTO dto, UserEntity owner) {
+        PackageEntity entity= new PackageEntity();
+        entity.setId(dto.getId());
+        entity.setOwner(owner);
+        entity.setNume(dto.getNume());
+        entity.setLocatie(dto.getLocatie());
+        entity.setDescriere(dto.getDescriere());
+        return entity;
+    }
+}

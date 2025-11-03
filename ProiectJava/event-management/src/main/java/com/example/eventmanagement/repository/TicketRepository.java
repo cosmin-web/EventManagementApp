@@ -1,14 +1,14 @@
 package com.example.eventmanagement.repository;
 
-import com.example.eventmanagement.model.Event;
+import com.example.eventmanagement.model.EventEntity;
 import com.example.eventmanagement.model.PackageEntity;
-import com.example.eventmanagement.model.Ticket;
+import com.example.eventmanagement.model.TicketEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.*;
 
-public interface TicketRepository extends JpaRepository<Ticket, String>
+public interface TicketRepository extends JpaRepository<TicketEntity, String>
 {
-    List<Ticket> findByPachet(PackageEntity pachet);
-    List<Ticket> findByEveniment(Event eveniment);
+    List<TicketEntity> findByPachet(PackageEntity pachet);
+    List<TicketEntity> findByEveniment(EventEntity eveniment);
     boolean existsByCod(String cod);
 }

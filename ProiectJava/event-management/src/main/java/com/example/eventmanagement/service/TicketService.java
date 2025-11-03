@@ -1,8 +1,8 @@
 package com.example.eventmanagement.service;
 
-import com.example.eventmanagement.model.Event;
+import com.example.eventmanagement.model.EventEntity;
 import com.example.eventmanagement.model.PackageEntity;
-import com.example.eventmanagement.model.Ticket;
+import com.example.eventmanagement.model.TicketEntity;
 import com.example.eventmanagement.repository.EventRepository;
 import com.example.eventmanagement.repository.PackageRepository;
 import com.example.eventmanagement.repository.TicketRepository;
@@ -25,50 +25,58 @@ public class TicketService {
     @Autowired
     private PackageRepository packageRepository;
 
-    public List<Ticket> getAllTickets() {
+    public List<TicketEntity> getAllTickets() {
         return ticketRepository.findAll();
     }
 
-    public Optional<Ticket> getTicketByCode(String code) {
+    public Optional<TicketEntity> getTicketByCode(String code) {
         return ticketRepository.findById(code);
     }
 
-    public Ticket createTicketForEvent(Integer eventId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista"));
+    public TicketEntity createTicketForEvent(Integer eventId) {
+        EventEntity event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista."));
 
         long bileteVandute = ticketRepository.findByEveniment(event).size();
 
         if (event.getNumarLocuri() == null || bileteVandute >= event.getNumarLocuri()) {
-            throw new IllegalStateException("Nu mai sunt locuri disponibile pentru acest eveniment");
+            throw new IllegalStateException("Nu mai sunt locuri disponibile pentru acest eveniment.");
         }
 
         String cod = UUID.randomUUID().toString();
-        Ticket ticket = new Ticket(cod, null, event);
+        TicketEntity ticket = new TicketEntity();
+        ticket.setCod(cod);
+        ticket.setEveniment(event);
+        ticket.setPachet(null);
+
         return ticketRepository.save(ticket);
     }
 
-    public Ticket createTicketForPackage(Integer packageId) {
+    public TicketEntity createTicketForPackage(Integer packageId) {
         PackageEntity pachet = packageRepository.findById(packageId)
                 .orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista."));
 
         String cod = UUID.randomUUID().toString();
-        Ticket ticket = new Ticket(cod, pachet, null);
+        TicketEntity ticket = new TicketEntity();
+        ticket.setCod(cod);
+        ticket.setPachet(pachet);
+        ticket.setEveniment(null);
+
         return ticketRepository.save(ticket);
     }
 
     public void deleteTicket(String cod) {
-        if(!ticketRepository.existsByCod(cod)) {
-            throw new IllegalArgumentException("Biletul nu exista");
+        if (!ticketRepository.existsById(cod)) {
+            throw new IllegalArgumentException("Biletul nu exista.");
         }
         ticketRepository.deleteById(cod);
     }
 
-    public List<Ticket> getTicketsByEvent(Event event) {
+    public List<TicketEntity> getTicketsByEvent(EventEntity event) {
         return ticketRepository.findByEveniment(event);
     }
 
-    public List<Ticket> getTicketsByPackage(PackageEntity pachet) {
+    public List<TicketEntity> getTicketsByPackage(PackageEntity pachet) {
         return ticketRepository.findByPachet(pachet);
     }
 }

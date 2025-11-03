@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "pachete_evenimente")
-@IdClass(PackageEventId.class)
+@IdClass(PackageEventIdEntity.class)
 public class PackageEvent {
 
     @Id
@@ -15,13 +15,13 @@ public class PackageEvent {
     @Id
     @ManyToOne
     @JoinColumn(name = "eveniment_id", nullable = false)
-    private Event eveniment;
+    private EventEntity eveniment;
 
     private Integer numarLocuri;
 
     public PackageEvent() {}
 
-    public PackageEvent(PackageEntity pachet, Event eveniment, Integer numarLocuri) {
+    public PackageEvent(PackageEntity pachet, EventEntity eveniment, Integer numarLocuri) {
         this.pachet = pachet;
         this.eveniment = eveniment;
         this.numarLocuri = numarLocuri;
@@ -35,11 +35,11 @@ public class PackageEvent {
         this.pachet = pachet;
     }
 
-    public Event getEveniment() {
+    public EventEntity getEveniment() {
         return eveniment;
     }
 
-    public void setEveniment(Event eveniment) {
+    public void setEveniment(EventEntity eveniment) {
         this.eveniment = eveniment;
     }
 

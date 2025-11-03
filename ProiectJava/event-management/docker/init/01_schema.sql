@@ -10,12 +10,6 @@ CREATE TABLE utilizatori (
     rol ENUM('admin', 'owner-event', 'client') NOT NULL
 );
 
-INSERT INTO utilizatori(email, parola, rol)
-VALUES
-('admin@local', 'admin', 'admin'),
-('owner@local', 'owner', 'owner-event'),
-('client@local', 'client', 'client');
-
 -- EVENIMENTE
 CREATE TABLE evenimente (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -56,6 +50,3 @@ CREATE TABLE bilete (
     FOREIGN KEY (pachet_id) REFERENCES pachete(id),
     FOREIGN KEY (eveniment_id) REFERENCES evenimente(id)
 );
-
-CREATE INDEX idx_evenimente_nume_locatie ON evenimente(nume, locatie);
-CREATE INDEX idx_pachete_nume_locatie ON pachete(nume, locatie);
