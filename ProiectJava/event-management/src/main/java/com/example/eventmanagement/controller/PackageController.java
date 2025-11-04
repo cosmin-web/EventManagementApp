@@ -42,13 +42,38 @@ public class PackageController {
         );
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<Map<String, Object>>> getAllPackages() {
+//        var list = packageService.getAllPackages().stream()
+//                .map(PackageMapper::fromEntity)
+//                .map(dto -> wrap(dto, packageLinks(dto.getId())))
+//                .collect(Collectors.toList());
+//        return ResponseEntity.ok(list);
+//    }
+
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> getAllPackages() {
-        var list = packageService.getAllPackages().stream()
+    public ResponseEntity<Map<String, Object>> getPackages(
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String type,
+        @RequestParam(required = false) String eventName,
+        @RequestParam (required = false, name = "available_tickets") Integer availableTickets,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "5", name = "items_per_page") int size)
+    {
+        var resultPage = packageService.searchPackages(name, type, eventName, availableTickets, page, size);
+
+        var data = resultPage.getContent().stream()
                 .map(PackageMapper::fromEntity)
                 .map(dto -> wrap(dto, packageLinks(dto.getId())))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(list);
+                .toList();
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("content", data);
+        response.put("currentPage", resultPage.getNumber());
+        response.put("totalItems", resultPage.getTotalElements());
+        response.put("totalPage", resultPage.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

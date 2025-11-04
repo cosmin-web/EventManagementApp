@@ -42,13 +42,37 @@ public class EventController {
         );
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<Map<String, Object>>> getAllEvents() {
+//        var list = eventService.getAllEvents().stream()
+//                .map(EventMapper::fromEntity)
+//                .map(dto -> wrap(dto, eventLinks(dto.getId())))
+//                .collect(Collectors.toList());
+//        return ResponseEntity.ok(list);
+//    }
+
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> getAllEvents() {
-        var list = eventService.getAllEvents().stream()
+    public ResponseEntity<Map<String, Object>> getEvents(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false, name = "available_tickets") Integer availableTickets,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
+
+        var resultPage = eventService.searchEvents(name, location, availableTickets, page, size);
+
+        var data = resultPage.getContent().stream()
                 .map(EventMapper::fromEntity)
                 .map(dto -> wrap(dto, eventLinks(dto.getId())))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(list);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("content", data);
+        response.put("currentPage", resultPage.getNumber());
+        response.put("totalItems", resultPage.getTotalElements());
+        response.put("totalPages", resultPage.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

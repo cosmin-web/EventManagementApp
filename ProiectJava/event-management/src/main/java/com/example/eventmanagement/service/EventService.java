@@ -5,7 +5,15 @@ import com.example.eventmanagement.model.PackageEvent;
 import com.example.eventmanagement.repository.EventRepository;
 import com.example.eventmanagement.repository.PackageEventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -55,5 +63,23 @@ public class EventService {
 
     public List<PackageEvent> getPackagesForEvent(EventEntity event) {
         return packageEventRepository.findByEveniment(event);
+    }
+
+    public Page<EventEntity> searchEvents(String name, String location, Integer availableTickets, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<EventEntity> allEvents = eventRepository.findAll();
+
+        List<EventEntity> filtered = allEvents.stream()
+                .filter(e -> name == null || e.getNume().toLowerCase().contains(name.toLowerCase()))
+                .filter(e -> location == null || (e.getLocatie() != null && e.getLocatie().toLowerCase().contains(location.toLowerCase())))
+                .filter(e -> availableTickets == null || (e.getNumarLocuri() != null && e.getNumarLocuri() >= availableTickets))
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), filtered.size());
+        List<EventEntity> paginated = start >= filtered.size() ? List.of() : filtered.subList(start, end);
+
+        return new PageImpl<>(paginated, pageable, filtered.size());
     }
 }

@@ -10,6 +10,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class PackageService {
 
@@ -62,5 +67,30 @@ public class PackageService {
                 .filter(num -> num != null)
                 .min(Integer::compareTo)
                 .orElse(0);
+    }
+
+    public Page<PackageEntity> searchPackages(String name, String type, String eventName, Integer availableTickets, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<PackageEntity> allPackages = packageRepository.findAll();
+
+        List<PackageEntity> filtered = allPackages.stream()
+                .filter(p -> name == null || p.getNume().toLowerCase().contains(name.toLowerCase()))
+                .filter(p -> type == null || (p.getDescriere() != null && p.getDescriere().toLowerCase().contains(type.toLowerCase())))
+                .filter(p -> {
+                    if(availableTickets == null) return true;
+                    Integer locuriDisponibile = calculeazaLocuriDisponibile(p);
+                    return locuriDisponibile >= availableTickets;
+                })
+                .filter(p -> eventName == null || packageEventRepository.findByPachet(p).stream()
+                        .anyMatch(pe -> pe.getEveniment().getNume().toLowerCase().contains(eventName.toLowerCase())))
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), filtered.size());
+
+        List<PackageEntity> paginated = start >= filtered.size() ? List.of() : filtered.subList(start, end);
+
+        return new PageImpl<>(paginated, pageable, filtered.size());
     }
 }

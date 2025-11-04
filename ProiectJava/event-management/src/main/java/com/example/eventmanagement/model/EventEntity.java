@@ -20,7 +20,6 @@ public class EventEntity {
     private String locatie;
     private String descriere;
 
-    @Column(name = "numarLocuri")
     private Integer numarLocuri;
 
     public EventEntity() {}
