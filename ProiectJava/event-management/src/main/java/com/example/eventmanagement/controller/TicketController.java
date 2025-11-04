@@ -1,5 +1,6 @@
 package com.example.eventmanagement.controller;
 
+import com.example.eventmanagement.mapper.TicketMapper;
 import com.example.eventmanagement.model.EventEntity;
 import com.example.eventmanagement.model.PackageEntity;
 import com.example.eventmanagement.model.TicketEntity;
@@ -44,12 +45,35 @@ public class TicketController {
         );
     }
 
+//    @GetMapping("/tickets")
+//    public ResponseEntity<List<Map<String, Object>>> getAllTickets() {
+//        var list = ticketService.getAllTickets().stream()
+//                .map(t -> wrap(t, ticketLinks(t.getCod())))
+//                .collect(Collectors.toList());
+//        return ResponseEntity.ok(list);
+//    }
+
     @GetMapping("/tickets")
-    public ResponseEntity<List<Map<String, Object>>> getAllTickets() {
-        var list = ticketService.getAllTickets().stream()
-                .map(t -> wrap(t, ticketLinks(t.getCod())))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(list);
+    public ResponseEntity<Map<String, Object>> getTickets(
+            @RequestParam(required = false) String eventName,
+            @RequestParam(required = false) String packageName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
+
+        var resultPage = ticketService.searchTickets(eventName, packageName, page, size);
+
+        var data = resultPage.getContent().stream()
+                .map(TicketMapper::fromEntity)
+                .map(dto -> wrap(dto, ticketLinks(dto.getCod())))
+                .toList();
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("content", data);
+        response.put("currentPage", resultPage.getNumber());
+        response.put("totalItems", resultPage.getTotalElements());
+        response.put("totalPages", resultPage.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("tickets/{cod}")

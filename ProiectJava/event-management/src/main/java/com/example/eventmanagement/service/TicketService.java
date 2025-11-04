@@ -13,6 +13,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class TicketService {
 
@@ -78,5 +83,24 @@ public class TicketService {
 
     public List<TicketEntity> getTicketsByPackage(PackageEntity pachet) {
         return ticketRepository.findByPachet(pachet);
+    }
+
+
+    public Page<TicketEntity> searchTickets(String eventName, String packageName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<TicketEntity> allTickets = ticketRepository.findAll();
+
+        List<TicketEntity> filtered = allTickets.stream()
+                .filter(t -> eventName == null || (t.getEveniment() != null && t.getEveniment().getNume().toLowerCase().contains(eventName.toLowerCase())))
+                .filter(t -> packageName == null || (t.getPachet() != null && t.getPachet().getNume().toLowerCase().contains(packageName.toLowerCase())))
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), filtered.size());
+
+        List<TicketEntity> paginated = start >= filtered.size() ? List.of() : filtered.subList(start, end);
+
+        return new PageImpl<>(paginated, pageable, filtered.size());
     }
 }
