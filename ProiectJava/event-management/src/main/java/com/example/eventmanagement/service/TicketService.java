@@ -30,6 +30,9 @@ public class TicketService {
     @Autowired
     private PackageRepository packageRepository;
 
+    @Autowired
+    private PackageService packageService;
+
     public List<TicketEntity> getAllTickets() {
         return ticketRepository.findAll();
     }
@@ -61,6 +64,11 @@ public class TicketService {
         PackageEntity pachet = packageRepository.findById(packageId)
                 .orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista."));
 
+        int available = packageService.calculeazaLocuriDisponibile(pachet);
+        if (available <= 0) {
+            throw new IllegalStateException("Nu mai sunt locuri disponibile pentru acest pachet.");
+        }
+
         String cod = UUID.randomUUID().toString();
         TicketEntity ticket = new TicketEntity();
         ticket.setCod(cod);
@@ -69,6 +77,7 @@ public class TicketService {
 
         return ticketRepository.save(ticket);
     }
+
 
     public void deleteTicket(String cod) {
         if (!ticketRepository.existsById(cod)) {
@@ -84,7 +93,6 @@ public class TicketService {
     public List<TicketEntity> getTicketsByPackage(PackageEntity pachet) {
         return ticketRepository.findByPachet(pachet);
     }
-
 
     public Page<TicketEntity> searchTickets(String eventName, String packageName, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);

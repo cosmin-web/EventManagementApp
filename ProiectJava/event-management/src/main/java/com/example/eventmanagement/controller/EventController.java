@@ -34,13 +34,31 @@ public class EventController {
         return response;
     }
 
-
     private Map<String, String> eventLinks(Integer id) {
         return Map.of(
           "self", "/api/event-manager/events/" + id,
           "parent", "/api/event-manager/events"
         );
     }
+
+    private EventDTO enrichEvent(EventEntity event) {
+        EventDTO dto = EventMapper.fromEntity(event);
+
+        int soldOnEvent = eventService.countTicketsSold(event);
+        int packageImpact = eventService.countPackageTicketsImpactForEvent(event);
+
+        int capacity = event.getNumarLocuri() != null ? event.getNumarLocuri() : 0;
+        int available = capacity - soldOnEvent - packageImpact;
+
+        dto.setTicketsSold(soldOnEvent);
+        dto.setAvailableTickets(Math.max(available, 0));
+
+        if (event.getOwner() != null)
+            dto.setOwnerEmail(event.getOwner().getEmail());
+
+        return dto;
+    }
+
 
 //    @GetMapping
 //    public ResponseEntity<List<Map<String, Object>>> getAllEvents() {
@@ -62,8 +80,7 @@ public class EventController {
         var resultPage = eventService.searchEvents(name, location, availableTickets, page, size);
 
         var data = resultPage.getContent().stream()
-                .map(EventMapper::fromEntity)
-                .map(dto -> wrap(dto, eventLinks(dto.getId())))
+                .map(event -> wrap(enrichEvent(event), eventLinks(event.getId())))
                 .collect(Collectors.toList());
 
         Map<String, Object> response = new LinkedHashMap<>();
@@ -78,32 +95,32 @@ public class EventController {
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getEventById(@PathVariable Integer id) {
         return eventService.getEventById(id)
-                .map(EventMapper::fromEntity)
-                .map(dto -> ResponseEntity.ok(wrap(dto, eventLinks(dto.getId()))))
+                .map(event -> ResponseEntity.ok(wrap(enrichEvent(event), eventLinks(event.getId()))))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> createEvent(@RequestBody @Valid EventDTO dto) {
         UserEntity owner = userService.getUserById(dto.getOwnerId())
-                .orElseThrow(()-> new IllegalArgumentException("Proprietarul nu exista"));
+                .orElseThrow(() -> new IllegalArgumentException("Proprietarul nu exista."));
 
         EventEntity event = EventMapper.toEntity(dto, owner);
         EventEntity saved = eventService.createEvent(event);
-        EventDTO response = EventMapper.fromEntity(saved);
+        EventDTO response = enrichEvent(saved);
 
         return ResponseEntity.created(URI.create("/api/event-manager/events/" + saved.getId()))
                 .body(wrap(response, eventLinks(saved.getId())));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateEvent(@PathVariable Integer id, @RequestBody @Valid EventDTO dto) {
+    public ResponseEntity<Map<String, Object>> updateEvent(@PathVariable Integer id,
+                                                           @RequestBody @Valid EventDTO dto) {
         UserEntity owner = userService.getUserById(dto.getOwnerId())
-                .orElseThrow(()-> new IllegalArgumentException("Proprietarul nu exista"));
+                .orElseThrow(() -> new IllegalArgumentException("Proprietarul nu exista."));
 
         EventEntity entity = EventMapper.toEntity(dto, owner);
         EventEntity updated = eventService.updateEvent(id, entity);
-        EventDTO response = EventMapper.fromEntity(updated);
+        EventDTO response = enrichEvent(updated);
 
         return ResponseEntity.ok(wrap(response, eventLinks(updated.getId())));
     }

@@ -45,6 +45,35 @@ public class TicketController {
         );
     }
 
+    private Map<String, Object> enrichTicket(TicketEntity ticket) {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("cod", ticket.getCod());
+
+        if (ticket.getEveniment() != null) {
+            var e = ticket.getEveniment();
+            data.put("event", Map.of(
+                    "id", e.getId(),
+                    "nume", e.getNume(),
+                    "locatie", e.getLocatie(),
+                    "descriere", e.getDescriere(),
+                    "numarLocuri", e.getNumarLocuri()
+            ));
+        }
+
+        if (ticket.getPachet() != null) {
+            var p = ticket.getPachet();
+            data.put("package", Map.of(
+                    "id", p.getId(),
+                    "nume", p.getNume(),
+                    "locatie", p.getLocatie(),
+                    "descriere", p.getDescriere()
+            ));
+        }
+
+        return data;
+    }
+
+
 //    @GetMapping("/tickets")
 //    public ResponseEntity<List<Map<String, Object>>> getAllTickets() {
 //        var list = ticketService.getAllTickets().stream()
@@ -63,8 +92,8 @@ public class TicketController {
         var resultPage = ticketService.searchTickets(eventName, packageName, page, size);
 
         var data = resultPage.getContent().stream()
-                .map(TicketMapper::fromEntity)
-                .map(dto -> wrap(dto, ticketLinks(dto.getCod())))
+                .map(this::enrichTicket)
+                .map(dto -> wrap(dto, ticketLinks((String) dto.get("cod"))))
                 .toList();
 
         Map<String, Object> response = new LinkedHashMap<>();
@@ -76,12 +105,14 @@ public class TicketController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("tickets/{cod}")
+
+    @GetMapping("/tickets/{cod}")
     public ResponseEntity<Map<String, Object>> getTicketByCod(@PathVariable String cod) {
         return ticketService.getTicketByCode(cod)
-                .map(t -> ResponseEntity.ok(wrap(t, ticketLinks(t.getCod()))))
+                .map(t -> ResponseEntity.ok(wrap(enrichTicket(t), ticketLinks(t.getCod()))))
                 .orElse(ResponseEntity.status(404).body(Map.of("error", "Biletul nu exista")));
     }
+
 
     @GetMapping("/events/{eventId}/tickets")
     public ResponseEntity<List<Map<String, Object>>> getAllTicketsFromEvent(@PathVariable Integer eventId) {
@@ -89,43 +120,27 @@ public class TicketController {
                 .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista."));
 
         var list = ticketService.getTicketsByEvent(eveniment).stream()
-                .map(t -> wrap(t, ticketLinks(t.getCod())))
+                .map(this::enrichTicket)
+                .map(dto -> wrap(dto, ticketLinks((String) dto.get("cod"))))
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok(list);
     }
+
 
     @GetMapping("/event-packets/{packetId}/tickets")
     public ResponseEntity<List<Map<String, Object>>> getAllTicketsFromPackage(@PathVariable Integer packetId) {
         PackageEntity pachet = packageService.getPackageById(packetId)
-                .orElseThrow(() -> new IllegalArgumentException("Acest pachet nu exista"));
-
-        var evenimente = packageService.getEventsForPackage(pachet).stream()
-                .map(pe -> Map.of(
-                        "id", pe.getEveniment().getId(),
-                        "nume", pe.getEveniment().getNume(),
-                        "locatie", pe.getEveniment().getLocatie(),
-                        "descriere", pe.getEveniment().getDescriere(),
-                        "numarLocuri", pe.getNumarLocuri()
-                ))
-                .toList();
+                .orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista."));
 
         var list = ticketService.getTicketsByPackage(pachet).stream()
-                .map(t -> {
-                    Map<String, Object> data = new LinkedHashMap<>();
-                    data.put("cod", t.getCod());
-                    data.put("pachet", Map.of(
-                            "id", pachet.getId(),
-                            "nume", pachet.getNume(),
-                            "locatie", pachet.getLocatie(),
-                            "descriere", pachet.getDescriere()
-                    ));
-                    data.put("evenimenteIncluse", evenimente);
-                    return wrap(data, ticketLinks(t.getCod()));
-                })
+                .map(this::enrichTicket)
+                .map(dto -> wrap(dto, ticketLinks((String) dto.get("cod"))))
                 .toList();
 
         return ResponseEntity.ok(list);
     }
+
 
 
     @PostMapping("/events/{eventId}/tickets")

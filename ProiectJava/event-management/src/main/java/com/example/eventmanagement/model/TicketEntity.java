@@ -28,7 +28,6 @@ public class TicketEntity {
     public String getCod() {
         return cod;
     }
-
     public void setCod(String cod) {
         this.cod = cod;
     }
@@ -36,7 +35,6 @@ public class TicketEntity {
     public PackageEntity getPachet() {
         return pachet;
     }
-
     public void setPachet(PackageEntity pachet) {
         this.pachet = pachet;
     }
@@ -44,7 +42,6 @@ public class TicketEntity {
     public EventEntity getEveniment() {
         return eveniment;
     }
-
     public void setEveniment(EventEntity eveniment) {
         this.eveniment = eveniment;
     }

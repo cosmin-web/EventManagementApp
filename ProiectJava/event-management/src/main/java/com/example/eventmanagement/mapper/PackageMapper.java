@@ -9,13 +9,22 @@ public class PackageMapper {
     public static PackageDTO fromEntity(PackageEntity entity) {
         if(entity == null) return null;
 
-        return new PackageDTO(
+        PackageDTO dto = new PackageDTO(
                 entity.getId(),
                 entity.getOwner().getId(),
                 entity.getNume(),
                 entity.getLocatie(),
                 entity.getDescriere()
         );
+
+        if(entity.getOwner() != null) {
+            dto.setOwnerEmail(entity.getOwner().getEmail());
+        }
+
+        dto.setNumberOfEvents(0);
+        dto.setAvailableTickets(0);
+
+        return dto;
     }
 
     public static PackageEntity toEntity(PackageDTO dto, UserEntity owner) {

@@ -52,18 +52,37 @@ public class PackageEventController {
         );
     }
 
+    private PackageEventDTO enrichRelation(PackageEvent relation) {
+        PackageEventDTO dto = new PackageEventDTO();
+
+        var pachet = relation.getPachet();
+        var event = relation.getEveniment();
+
+        dto.setPackageId(pachet.getId());
+        dto.setEventId(event.getId());
+        dto.setNumarLocuri(relation.getNumarLocuri());
+
+        dto.setPackageName(pachet.getNume());
+        dto.setEventName(event.getNume());
+        dto.setEventLocation(event.getLocatie());
+
+        return dto;
+    }
+
     @GetMapping("/events/{eventId}/event-packets")
     public ResponseEntity<List<Map<String, Object>>> getPackagesForEvent(@PathVariable Integer eventId) {
         EventEntity event = eventService.getEventById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista"));
 
         var list = packageEventService.getPackagesForEvent(event).stream()
-                .map(PackageEventMapper::fromEntity)
-                .map(dto -> wrap(dto, eventToPackageLinks(eventId, dto.getPackageId())))
+                .map(this::enrichRelation)
+                .map(dto -> wrap(dto, eventToPackageLinks(dto.getEventId(), dto.getPackageId())))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(list);
     }
+
+
 
     @GetMapping("/event-packets/{packetId}/events")
     public ResponseEntity<List<Map<String, Object>>> getEventsForPackage(@PathVariable Integer packetId) {
@@ -71,27 +90,13 @@ public class PackageEventController {
                 .orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista"));
 
         var list = packageEventService.getEventsForPackage(pachet).stream()
-                .map(pe -> {
-                    // extragem evenimentul asociat
-                    EventEntity ev = pe.getEveniment();
-
-                    // construim un obiect de tip Map pentru răspuns
-                    Map<String, Object> data = new LinkedHashMap<>();
-                    data.put("pachetId", pachet.getId());
-                    data.put("eveniment", Map.of(
-                            "id", ev.getId(),
-                            "nume", ev.getNume(),
-                            "locatie", ev.getLocatie(),
-                            "descriere", ev.getDescriere()
-                    ));
-                    data.put("numarLocuri", pe.getNumarLocuri());
-
-                    return wrap(data, packageToEventLinks(pachet.getId(), ev.getId()));
-                })
+                .map(this::enrichRelation)
+                .map(dto -> wrap(dto, packageToEventLinks(dto.getPackageId(), dto.getEventId())))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(list);
     }
+
 
 
     @PostMapping("/event-packets/{packetId}/events/{eventId}")

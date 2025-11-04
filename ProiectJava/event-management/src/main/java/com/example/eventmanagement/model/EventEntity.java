@@ -33,51 +33,22 @@ public class EventEntity {
         this.numarLocuri = numarLocuri;
     }
 
-    public Integer getId() {
-        return id;
-    }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    public UserEntity getOwner() { return owner; }
+    public void setOwner(UserEntity owner) { this.owner = owner; }
 
-    public UserEntity getOwner() {
-        return owner;
-    }
+    public String getNume() { return nume; }
+    public void setNume(String nume) { this.nume = nume; }
 
-    public void setOwner(UserEntity owner) {
-        this.owner = owner;
-    }
+    public String getLocatie() { return locatie; }
+    public void setLocatie(String locatie) { this.locatie = locatie; }
 
-    public String getNume() {
-        return nume;
-    }
+    public String getDescriere() { return descriere; }
+    public void setDescriere(String descriere) { this.descriere = descriere; }
 
-    public void setNume(String nume) {
-        this.nume = nume;
-    }
+    public Integer getNumarLocuri() { return numarLocuri; }
+    public void setNumarLocuri(Integer numarLocuri) { this.numarLocuri = numarLocuri; }
 
-    public String getLocatie() {
-        return locatie;
-    }
-
-    public void setLocatie(String locatie) {
-        this.locatie = locatie;
-    }
-
-    public String getDescriere() {
-        return descriere;
-    }
-
-    public void setDescriere(String descriere) {
-        this.descriere = descriere;
-    }
-
-    public Integer getNumarLocuri() {
-        return numarLocuri;
-    }
-
-    public void setNumarLocuri(Integer numarLocuri) {
-        this.numarLocuri = numarLocuri;
-    }
 }

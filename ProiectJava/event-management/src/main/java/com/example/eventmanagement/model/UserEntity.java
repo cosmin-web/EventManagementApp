@@ -36,7 +36,6 @@ public class UserEntity {
     public Integer getId() {
         return id;
     }
-
     public void setId(Integer id) {
         this.id = id;
     }
@@ -44,7 +43,6 @@ public class UserEntity {
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -52,7 +50,6 @@ public class UserEntity {
     public String getParola() {
         return parola;
     }
-
     public void setParola(String parola) {
         this.parola = parola;
     }
@@ -60,7 +57,6 @@ public class UserEntity {
     public Role getRol() {
         return rol;
     }
-
     public void setRol(Role rol) {
         this.rol = rol;
     }

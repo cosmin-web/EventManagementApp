@@ -4,6 +4,7 @@ import com.example.eventmanagement.model.EventEntity;
 import com.example.eventmanagement.model.PackageEvent;
 import com.example.eventmanagement.repository.EventRepository;
 import com.example.eventmanagement.repository.PackageEventRepository;
+import com.example.eventmanagement.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,9 @@ public class EventService {
 
     @Autowired
     private PackageEventRepository packageEventRepository;
+
+    @Autowired
+    private TicketRepository ticketRepository;
 
     public List<EventEntity> getAllEvents() {
         return eventRepository.findAll();
@@ -81,5 +85,19 @@ public class EventService {
         List<EventEntity> paginated = start >= filtered.size() ? List.of() : filtered.subList(start, end);
 
         return new PageImpl<>(paginated, pageable, filtered.size());
+    }
+
+    public int countTicketsSold(EventEntity event) {
+        return ticketRepository.findByEveniment(event).size();
+    }
+
+    public int countPackageTicketsImpactForEvent(EventEntity event) {
+        var rels = packageEventRepository.findByEveniment(event);
+
+        return rels.stream()
+                .map(pe -> pe.getPachet())
+                .distinct()
+                .mapToInt(p -> ticketRepository.findByPachet(p).size())
+                .sum();
     }
 }

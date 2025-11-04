@@ -21,6 +21,11 @@ public class EventDTO {
     @NotNull(message = "Id-ul proprietarului este obligatoriu.")
     private Integer ownerId;
 
+    //campuri noi
+    private String ownerEmail;
+    private Integer ticketsSold;
+    private Integer availableTickets;
+
     public EventDTO() {}
 
     public EventDTO(Integer id, String nume, String locatie, String descriere, Integer numarLocuri, Integer ownerId) {
@@ -49,4 +54,15 @@ public class EventDTO {
 
     public Integer getOwnerId() { return ownerId; }
     public void setOwnerId(Integer ownerId) { this.ownerId = ownerId; }
+
+    public String getOwnerEmail() { return ownerEmail; }
+    public void setOwnerEmail(String ownerEmail) { this.ownerEmail = ownerEmail; }
+
+    public Integer getTicketsSold() { return ticketsSold; }
+    public void setTicketsSold(Integer ticketsSold) { this.ticketsSold = ticketsSold; }
+
+    public Integer getAvailableTickets() { return availableTickets; }
+    public void setAvailableTickets(Integer availableTickets) { this.availableTickets = availableTickets; }
+
+
 }

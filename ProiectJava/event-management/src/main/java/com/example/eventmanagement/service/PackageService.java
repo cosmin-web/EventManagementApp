@@ -5,6 +5,7 @@ import com.example.eventmanagement.model.PackageEvent;
 import com.example.eventmanagement.repository.PackageEventRepository;
 import com.example.eventmanagement.repository.PackageRepository;
 
+import com.example.eventmanagement.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -23,6 +24,9 @@ public class PackageService {
 
     @Autowired
     private PackageEventRepository packageEventRepository;
+
+    @Autowired
+    private TicketRepository ticketRepository;
 
     public List<PackageEntity> getAllPackages() {
         return packageRepository.findAll();
@@ -58,15 +62,38 @@ public class PackageService {
         return packageEventRepository.findByPachet(pachet);
     }
 
+//    public Integer calculeazaLocuriDisponibile(PackageEntity pachet) {
+//        List<PackageEvent> legaturi = packageEventRepository.findByPachet(pachet);
+//        if (legaturi.isEmpty()) return 0;
+//
+//        return legaturi.stream()
+//                .map(pe -> pe.getEveniment().getNumarLocuri())
+//                .filter(num -> num != null)
+//                .min(Integer::compareTo)
+//                .orElse(0);
+//    }
+
     public Integer calculeazaLocuriDisponibile(PackageEntity pachet) {
-        List<PackageEvent> legaturi = packageEventRepository.findByPachet(pachet);
+        int packageTicketsSold = ticketRepository.findByPachet(pachet).size();
+
+        var legaturi = packageEventRepository.findByPachet(pachet);
         if (legaturi.isEmpty()) return 0;
 
-        return legaturi.stream()
-                .map(pe -> pe.getEveniment().getNumarLocuri())
-                .filter(num -> num != null)
-                .min(Integer::compareTo)
-                .orElse(0);
+        int limitPerPackage = legaturi.stream().mapToInt(pe -> {
+            var ev = pe.getEveniment();
+
+            int capacity = pe.getNumarLocuri() != null
+                    ? pe.getNumarLocuri()
+                    : (ev.getNumarLocuri() != null ? ev.getNumarLocuri() : 0);
+
+            int eventTicketsSold = ticketRepository.findByEveniment(ev).size();
+
+            int remainingForThisEvent = capacity - eventTicketsSold - packageTicketsSold;
+
+            return Math.max(remainingForThisEvent, 0);
+        }).min().orElse(0);
+
+        return Math.max(limitPerPackage, 0);
     }
 
     public Page<PackageEntity> searchPackages(String name, String type, String eventName, Integer availableTickets, int page, int size) {
@@ -92,5 +119,9 @@ public class PackageService {
         List<PackageEntity> paginated = start >= filtered.size() ? List.of() : filtered.subList(start, end);
 
         return new PageImpl<>(paginated, pageable, filtered.size());
+    }
+
+    public int countEventsInPackage(PackageEntity entity) {
+        return packageEventRepository.findByPachet(entity).size();
     }
 }

@@ -18,7 +18,6 @@ public class PackageEventIdEntity implements Serializable {
     public Integer getPachet() {
         return pachet;
     }
-
     public void setPachet(Integer pachet) {
         this.pachet = pachet;
     }
@@ -26,7 +25,6 @@ public class PackageEventIdEntity implements Serializable {
     public Integer getEveniment() {
         return eveniment;
     }
-
     public void setEveniment(Integer eveniment) {
         this.eveniment = eveniment;
     }

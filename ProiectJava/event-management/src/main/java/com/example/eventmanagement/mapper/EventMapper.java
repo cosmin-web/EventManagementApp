@@ -7,9 +7,9 @@ import com.example.eventmanagement.model.UserEntity;
 public class EventMapper {
 
     public static EventDTO fromEntity(EventEntity entity) {
-        if(entity == null) return null;
+        if (entity == null) return null;
 
-        return new EventDTO(
+        EventDTO dto = new EventDTO(
                 entity.getId(),
                 entity.getNume(),
                 entity.getLocatie(),
@@ -17,6 +17,14 @@ public class EventMapper {
                 entity.getNumarLocuri(),
                 entity.getOwner() != null ? entity.getOwner().getId() : null
         );
+
+        if (entity.getOwner() != null)
+            dto.setOwnerEmail(entity.getOwner().getEmail());
+
+        dto.setTicketsSold(0);
+        dto.setAvailableTickets(entity.getNumarLocuri());
+
+        return dto;
     }
 
     public static EventEntity toEntity(EventDTO dto, UserEntity owner) {

@@ -42,6 +42,22 @@ public class PackageController {
         );
     }
 
+    private PackageDTO enrichPackage(PackageEntity entity) {
+        PackageDTO dto = PackageMapper.fromEntity(entity);
+
+        if(entity.getOwner() != null) {
+            dto.setOwnerEmail(entity.getOwner().getEmail());
+        }
+
+        int countEvents = packageService.countEventsInPackage(entity);
+        dto.setNumberOfEvents(countEvents);
+
+        int countAvailableTickets = packageService.calculeazaLocuriDisponibile(entity);
+        dto.setAvailableTickets(countAvailableTickets);
+
+        return dto;
+    }
+
 //    @GetMapping
 //    public ResponseEntity<List<Map<String, Object>>> getAllPackages() {
 //        var list = packageService.getAllPackages().stream()
@@ -63,8 +79,7 @@ public class PackageController {
         var resultPage = packageService.searchPackages(name, type, eventName, availableTickets, page, size);
 
         var data = resultPage.getContent().stream()
-                .map(PackageMapper::fromEntity)
-                .map(dto -> wrap(dto, packageLinks(dto.getId())))
+                .map(p -> wrap(enrichPackage(p), packageLinks(p.getId())))
                 .toList();
 
         Map<String, Object> response = new LinkedHashMap<>();
@@ -79,8 +94,7 @@ public class PackageController {
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getPackageById(@PathVariable Integer id) {
         return packageService.getPackageById(id)
-                .map(PackageMapper::fromEntity)
-                .map(dto->ResponseEntity.ok(wrap(dto, packageLinks(dto.getId()))))
+                .map(p->ResponseEntity.ok(wrap(enrichPackage(p), packageLinks(p.getId()))))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -91,7 +105,7 @@ public class PackageController {
 
         PackageEntity entity = PackageMapper.toEntity(dto, owner);
         PackageEntity saved = packageService.createPackages(entity);
-        PackageDTO response = PackageMapper.fromEntity(saved);
+        PackageDTO response = enrichPackage(saved);
 
         return ResponseEntity.created(URI.create("/api/event-manager/event-packets/" + saved.getId()))
                 .body(wrap(response, packageLinks(saved.getId())));
@@ -104,7 +118,7 @@ public class PackageController {
 
         PackageEntity entity = PackageMapper.toEntity(dto, owner);
         PackageEntity updated = packageService.updatePackage(id, entity);
-        PackageDTO response = PackageMapper.fromEntity(updated);
+        PackageDTO response = enrichPackage(updated);
 
         return ResponseEntity.ok(wrap(response, packageLinks(updated.getId())));
     }

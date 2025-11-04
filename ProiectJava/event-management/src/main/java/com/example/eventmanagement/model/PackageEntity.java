@@ -33,7 +33,6 @@ public class PackageEntity {
     public Integer getId() {
         return id;
     }
-
     public void setId(Integer id) {
         this.id = id;
     }
@@ -41,7 +40,6 @@ public class PackageEntity {
     public UserEntity getOwner() {
         return owner;
     }
-
     public void setOwner(UserEntity owner) {
         this.owner = owner;
     }
@@ -49,7 +47,6 @@ public class PackageEntity {
     public String getNume() {
         return nume;
     }
-
     public void setNume(String nume) {
         this.nume = nume;
     }
@@ -57,7 +54,6 @@ public class PackageEntity {
     public String getLocatie() {
         return locatie;
     }
-
     public void setLocatie(String locatie) {
         this.locatie = locatie;
     }
@@ -65,7 +61,6 @@ public class PackageEntity {
     public String getDescriere() {
         return descriere;
     }
-
     public void setDescriere(String descriere) {
         this.descriere = descriere;
     }

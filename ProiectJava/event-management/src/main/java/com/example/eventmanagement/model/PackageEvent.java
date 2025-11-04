@@ -30,7 +30,6 @@ public class PackageEvent {
     public PackageEntity getPachet() {
         return pachet;
     }
-
     public void setPachet(PackageEntity pachet) {
         this.pachet = pachet;
     }
@@ -38,7 +37,6 @@ public class PackageEvent {
     public EventEntity getEveniment() {
         return eveniment;
     }
-
     public void setEveniment(EventEntity eveniment) {
         this.eveniment = eveniment;
     }
@@ -46,7 +44,6 @@ public class PackageEvent {
     public Integer getNumarLocuri() {
         return numarLocuri;
     }
-
     public void setNumarLocuri(Integer numarLocuri) {
         this.numarLocuri = numarLocuri;
     }

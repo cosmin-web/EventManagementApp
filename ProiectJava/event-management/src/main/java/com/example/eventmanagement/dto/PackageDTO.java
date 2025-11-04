@@ -18,6 +18,11 @@ public class PackageDTO {
 
     private String descriere;
 
+    //campuri noi
+    private String ownerEmail;
+    private Integer numberOfEvents;
+    private Integer availableTickets;
+
     public PackageDTO() {}
 
     public PackageDTO(Integer id, Integer ownerId, String nume, String locatie, String descriere) {
@@ -28,7 +33,6 @@ public class PackageDTO {
         this.descriere = descriere;
     }
 
-    // getters & setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
@@ -43,4 +47,13 @@ public class PackageDTO {
 
     public Integer getOwnerId() { return ownerId; }
     public void setOwnerId(Integer ownerId) { this.ownerId = ownerId; }
+
+    public String getOwnerEmail() { return ownerEmail; }
+    public void setOwnerEmail(String ownerEmail) { this.ownerEmail = ownerEmail; }
+
+    public Integer getNumberOfEvents() { return numberOfEvents; }
+    public void setNumberOfEvents(Integer numberOfEvents) { this.numberOfEvents = numberOfEvents; }
+
+    public Integer getAvailableTickets() { return availableTickets; }
+    public void setAvailableTickets(Integer availableTickets) { this.availableTickets = availableTickets; }
 }
