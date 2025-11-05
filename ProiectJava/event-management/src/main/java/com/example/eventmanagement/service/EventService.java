@@ -15,9 +15,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 public class EventService {
@@ -30,6 +30,7 @@ public class EventService {
 
     @Autowired
     private TicketRepository ticketRepository;
+
 
     public List<EventEntity> getAllEvents() {
         return eventRepository.findAll();

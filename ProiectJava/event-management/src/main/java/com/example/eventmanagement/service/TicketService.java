@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+
 @Service
 public class TicketService {
 
@@ -32,6 +33,7 @@ public class TicketService {
 
     @Autowired
     private PackageService packageService;
+
 
     public List<TicketEntity> getAllTickets() {
         return ticketRepository.findAll();
@@ -77,7 +79,6 @@ public class TicketService {
 
         return ticketRepository.save(ticket);
     }
-
 
     public void deleteTicket(String cod) {
         if (!ticketRepository.existsById(cod)) {

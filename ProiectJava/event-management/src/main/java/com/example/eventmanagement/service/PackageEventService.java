@@ -45,12 +45,4 @@ public class PackageEventService {
     public void removeEventFromPackage(PackageEntity pachet, EventEntity eveniment) {
         packageEventRepository.deleteByPachetAndEveniment(pachet, eveniment);
     }
-
-    public List<PackageEvent> findByPackage(PackageEntity pachet) {
-        return packageEventRepository.findByPachet(pachet);
-    }
-
-    public List<PackageEvent> findByEvent(EventEntity eveniment) {
-        return packageEventRepository.findByEveniment(eveniment);
-    }
 }

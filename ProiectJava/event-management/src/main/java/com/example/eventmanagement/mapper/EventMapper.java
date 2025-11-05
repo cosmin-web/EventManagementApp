@@ -18,6 +18,7 @@ public class EventMapper {
                 entity.getOwner() != null ? entity.getOwner().getId() : null
         );
 
+        //adaugare noi campuri
         if (entity.getOwner() != null)
             dto.setOwnerEmail(entity.getOwner().getEmail());
 

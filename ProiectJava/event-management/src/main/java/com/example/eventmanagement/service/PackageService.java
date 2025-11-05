@@ -28,6 +28,7 @@ public class PackageService {
     @Autowired
     private TicketRepository ticketRepository;
 
+
     public List<PackageEntity> getAllPackages() {
         return packageRepository.findAll();
     }
