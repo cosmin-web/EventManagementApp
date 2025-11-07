@@ -6,6 +6,9 @@ import com.example.eventmanagement.model.EventEntity;
 import com.example.eventmanagement.model.UserEntity;
 import com.example.eventmanagement.service.EventService;
 import com.example.eventmanagement.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/event-manager/events")
+@Tag(name = "Events", description = "Operatii pentru gestionarea evenimentelor")
 public class EventController {
 
     @Autowired
@@ -59,16 +63,9 @@ public class EventController {
         return dto;
     }
 
-
-//    @GetMapping
-//    public ResponseEntity<List<Map<String, Object>>> getAllEvents() {
-//        var list = eventService.getAllEvents().stream()
-//                .map(EventMapper::fromEntity)
-//                .map(dto -> wrap(dto, eventLinks(dto.getId())))
-//                .collect(Collectors.toList());
-//        return ResponseEntity.ok(list);
-//    }
-
+    @Operation(summary = "Listare evenimente", description = "Returneaza o lista paginata de evenimente.")
+    @ApiResponse(responseCode = "200", description = "Lista de evenimente a fost returnata.")
+    @ApiResponse(responseCode = "400", description = "Parametri de filtrare invalizi.")
     @GetMapping
     public ResponseEntity<Map<String, Object>> getEvents(
             @RequestParam(required = false) String name,
@@ -92,6 +89,9 @@ public class EventController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Obtine un eveniment dupa ID")
+    @ApiResponse(responseCode = "200", description = "Evenimentul a fost gasit.")
+    @ApiResponse(responseCode = "404", description = "Evenimentul nu a fost gasit.")
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getEventById(@PathVariable Integer id) {
         return eventService.getEventById(id)
@@ -99,6 +99,11 @@ public class EventController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Creeaza un eveniment nou")
+    @ApiResponse(responseCode = "201", description = "Evenimentul a fost creat.")
+    @ApiResponse(responseCode = "400", description = "Date invalide sau lipsa campuri obligatorii.")
+    @ApiResponse(responseCode = "404", description = "Proprietarul nu a fost gasit.")
+    @ApiResponse(responseCode = "409", description = "Exista un eveniment cu acest nume.")
     @PostMapping
     public ResponseEntity<Map<String, Object>> createEvent(@RequestBody @Valid EventDTO dto) {
         UserEntity owner = userService.getUserById(dto.getOwnerId())
@@ -112,6 +117,10 @@ public class EventController {
                 .body(wrap(response, eventLinks(saved.getId())));
     }
 
+    @Operation(summary = "Actualizeaza un eveniment existent")
+    @ApiResponse(responseCode = "200", description = "Evenimentul a fost actualizat.")
+    @ApiResponse(responseCode = "400", description = "Date invalide.")
+    @ApiResponse(responseCode = "404", description = "Evenimentul nu a fost gasit.")
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateEvent(@PathVariable Integer id,
                                                            @RequestBody @Valid EventDTO dto) {
@@ -125,6 +134,9 @@ public class EventController {
         return ResponseEntity.ok(wrap(response, eventLinks(updated.getId())));
     }
 
+    @Operation(summary = "Sterge un eveniment după ID")
+    @ApiResponse(responseCode = "204", description = "Evenimentul a fost sters.")
+    @ApiResponse(responseCode = "404", description = "Evenimentul nu a fost gasit.")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Integer id) {
         eventService.deleteEvent(id);

@@ -63,6 +63,4 @@ public class EventDTO {
 
     public Integer getAvailableTickets() { return availableTickets; }
     public void setAvailableTickets(Integer availableTickets) { this.availableTickets = availableTickets; }
-
-
 }

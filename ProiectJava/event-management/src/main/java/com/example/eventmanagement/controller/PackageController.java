@@ -6,8 +6,12 @@ import com.example.eventmanagement.model.PackageEntity;
 import com.example.eventmanagement.model.UserEntity;
 import com.example.eventmanagement.service.PackageService;
 import com.example.eventmanagement.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.Valid;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/event-manager/event-packets")
+@Tag(name="Packages", description = "Operatii pentru gestionarea pachetelor de evenimente.")
 public class PackageController {
 
     @Autowired
@@ -58,15 +63,9 @@ public class PackageController {
         return dto;
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<Map<String, Object>>> getAllPackages() {
-//        var list = packageService.getAllPackages().stream()
-//                .map(PackageMapper::fromEntity)
-//                .map(dto -> wrap(dto, packageLinks(dto.getId())))
-//                .collect(Collectors.toList());
-//        return ResponseEntity.ok(list);
-//    }
-
+    @Operation(summary = "Listare pachete", description = "Returneaza o lista paginata de pachete.")
+    @ApiResponse(responseCode = "200", description = "Lista de pachete a fost returnata.")
+    @ApiResponse(responseCode = "400", description = "Parametri de filtrare invalizi.")
     @GetMapping
     public ResponseEntity<Map<String, Object>> getPackages(
         @RequestParam(required = false) String name,
@@ -91,6 +90,9 @@ public class PackageController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Obtine un pachet dupa ID")
+    @ApiResponse(responseCode = "200", description = "Pachetul a fost gasit.")
+    @ApiResponse(responseCode = "404", description = "Pachetul nu a fost gasit.")
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getPackageById(@PathVariable Integer id) {
         return packageService.getPackageById(id)
@@ -98,6 +100,11 @@ public class PackageController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Creeaza un pachet nou")
+    @ApiResponse(responseCode = "201", description = "Pachetul a fost creat cu succes.")
+    @ApiResponse(responseCode = "400", description = "Date invalide sau lipsa de campuri obligatorii.")
+    @ApiResponse(responseCode = "404", description = "Proprietarul specificat nu a fost gasit.")
+    @ApiResponse(responseCode = "409", description = "Exista deja un pachet cu acelasi nume.")
     @PostMapping
     public ResponseEntity<Map<String, Object>> createPackage(@RequestBody @Valid PackageDTO dto) {
         UserEntity owner = userService.getUserById(dto.getOwnerId())
@@ -111,6 +118,10 @@ public class PackageController {
                 .body(wrap(response, packageLinks(saved.getId())));
     }
 
+    @Operation(summary = "Actualizeaza un pachet existent")
+    @ApiResponse(responseCode = "200", description = "Pachetul a fost actualizat cu succes.")
+    @ApiResponse(responseCode = "400", description = "Date invalide.")
+    @ApiResponse(responseCode = "404", description = "Pachetul nu a fost gasit.")
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updatePackage(@PathVariable Integer id, @RequestBody @Valid PackageDTO dto) {
         UserEntity owner = userService.getUserById(dto.getOwnerId())
@@ -123,6 +134,9 @@ public class PackageController {
         return ResponseEntity.ok(wrap(response, packageLinks(updated.getId())));
     }
 
+    @Operation(summary = "Sterge un pachet")
+    @ApiResponse(responseCode = "204", description = "Pachetul a fost sters.")
+    @ApiResponse(responseCode = "404", description = "Pachetul nu a fost gasit.")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePackage(@PathVariable Integer id) {
         packageService.deletePackage(id);
