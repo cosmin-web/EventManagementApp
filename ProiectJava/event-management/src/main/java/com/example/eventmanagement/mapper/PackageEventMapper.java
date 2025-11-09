@@ -13,7 +13,7 @@ public class PackageEventMapper {
         dto.setPackageId(entity.getPachet().getId());
         dto.setNumarLocuri(entity.getNumarLocuri());
 
-        //adaugare noi campuri
+        //adaugare campuri noi
         dto.setPackageName(entity.getPachet().getNume());
         dto.setEventName(entity.getEveniment().getNume());
         dto.setEventLocation(entity.getEveniment().getLocatie());

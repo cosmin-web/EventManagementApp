@@ -17,7 +17,7 @@ public class PackageMapper {
                 entity.getDescriere()
         );
 
-        //adaugare noi campuri
+        //adaugare campuri noi
         if(entity.getOwner() != null) {
             dto.setOwnerEmail(entity.getOwner().getEmail());
         }

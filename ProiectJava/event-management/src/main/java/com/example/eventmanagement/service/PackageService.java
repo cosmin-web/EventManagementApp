@@ -48,12 +48,12 @@ public class PackageService {
                     p.setLocatie(updated.getLocatie());
                     p.setDescriere(updated.getDescriere());
                     return packageRepository.save(p);
-        }).orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista"));
+        }).orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista."));
     }
 
     public void deletePackage(Integer id) {
         PackageEntity pachet = packageRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista"));
+                .orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista."));
 
         packageEventRepository.deleteByPachet(pachet);
         packageRepository.delete(pachet);
@@ -62,17 +62,6 @@ public class PackageService {
     public List<PackageEvent> getEventsForPackage(PackageEntity pachet) {
         return packageEventRepository.findByPachet(pachet);
     }
-
-//    public Integer calculeazaLocuriDisponibile(PackageEntity pachet) {
-//        List<PackageEvent> legaturi = packageEventRepository.findByPachet(pachet);
-//        if (legaturi.isEmpty()) return 0;
-//
-//        return legaturi.stream()
-//                .map(pe -> pe.getEveniment().getNumarLocuri())
-//                .filter(num -> num != null)
-//                .min(Integer::compareTo)
-//                .orElse(0);
-//    }
 
     public Integer calculeazaLocuriDisponibile(PackageEntity pachet) {
         int packageTicketsSold = ticketRepository.findByPachet(pachet).size();

@@ -42,7 +42,7 @@ public class EventService {
 
     public EventEntity createEvent(EventEntity event) {
         if(event.getNumarLocuri() == null || event.getNumarLocuri() <= 0) {
-            throw new IllegalArgumentException("Numarul de locuri trebuie sa fie mai mare decat 0");
+            throw new IllegalArgumentException("Numarul de locuri trebuie sa fie mai mare decat 0.");
         }
         return eventRepository.save(event);
     }
@@ -55,7 +55,7 @@ public class EventService {
                     event.setDescriere(updatedEvent.getDescriere());
                     event.setNumarLocuri((updatedEvent.getNumarLocuri()));
                     return eventRepository.save(event);
-                }).orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista"));
+                }).orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista."));
     }
 
     public void deleteEvent(Integer id) {
