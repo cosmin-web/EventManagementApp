@@ -22,5 +22,22 @@ services:
       - mariadb_data:/var/lib/mysql
       - ./init:/docker-entrypoint-initdb.d:ro
 
+  backend:
+    build:
+      context: ..
+      dockerfile: src/main/java/Dockerfile
+    container_name: event-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mariadb://event-mariadb:3306/${MARIADB_DATABASE}"
+      SPRING_DATASOURCE_USERNAME: "${MARIADB_USER}"
+      SPRING_DATASOURCE_PASSWORD: "${MARIADB_PASSWORD}"
+      SPRING_JPA_HIBERNATE_DDL-AUTO: "update"
+      SPRING_PROFILES_ACTIVE: "dev"
+    depends_on:
+      - mariadb
+
 volumes:
   mariadb_data:
