@@ -13,6 +13,9 @@ public interface ClientRepository extends MongoRepository<ClientDocument, String
     //repo.save(client);
     //repo.deleteById(email);
 
+    Optional<ClientDocument> findByEmail(String email);
+
+
     @Query("{ 'nume': { $regex: ?0, $options: 'i' } }")
     List<ClientDocument> findByNumeLike(String regex);
 

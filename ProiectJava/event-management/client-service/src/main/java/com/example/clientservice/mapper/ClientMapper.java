@@ -16,7 +16,7 @@ public class ClientMapper {
         dto.setEmail(d.getEmail());
         dto.setNume(d.getNume());
         dto.setPrenume(d.getPrenume());
-        dto.setIsPublic(d.getIsPublic());
+        dto.setIsPublic(d.isPublic());
         dto.setSocial(d.getSocial());
 
         List<TicketRef> bilete = d.getBilete() != null ? d.getBilete() : Collections.emptyList();
@@ -32,7 +32,7 @@ public class ClientMapper {
         d.setEmail(dto.getEmail());
         d.setNume(dto.getNume());
         d.setPrenume(dto.getPrenume());
-        d.setIsPublic(dto.getIsPublic());
+        d.setPublic(dto.getIsPublic());
         d.setSocial(dto.getSocial());
 
         List<TicketDTO> bilete = dto.getBilete() != null ? dto.getBilete() : Collections.emptyList();

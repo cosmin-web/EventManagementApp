@@ -9,14 +9,21 @@ import java.util.*;
 public class ClientDocument {
 
     @Id
-    private String email;   //campul cheie _id in Mongo
+    private String id;
+
+    private String email;
     private String nume;
     private String prenume;
-    private Boolean isPublic;
+    private boolean isPublic;
     private Map<String, String> social = new HashMap<>();
+
     private List<TicketRef> bilete = new ArrayList<>();
 
-    //getters si setters
+    public ClientDocument() {}
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
@@ -26,8 +33,8 @@ public class ClientDocument {
     public String getPrenume() { return prenume; }
     public void setPrenume(String prenume) { this.prenume = prenume; }
 
-    public Boolean getIsPublic() { return isPublic; }
-    public void setIsPublic(Boolean isPublic) { this.isPublic = isPublic; }
+    public boolean isPublic() { return isPublic; }
+    public void setPublic(boolean aPublic) { isPublic = aPublic; }
 
     public Map<String, String> getSocial() { return social; }
     public void setSocial(Map<String, String> social) { this.social = social; }

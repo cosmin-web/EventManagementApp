@@ -17,6 +17,14 @@ public class ClientService {
         this.repo = repo;
     }
 
+    public Optional<ClientDocument> findById(String id) {
+        return repo.findById(id);
+    }
+
+    public void deleteById(String id) {
+        repo.deleteById(id);
+    }
+
     public List<ClientDocument> findAlls(String nameLike) {
         if (!StringUtils.hasText(nameLike)) {
             return repo.findAll();
