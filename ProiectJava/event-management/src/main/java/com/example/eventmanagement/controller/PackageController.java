@@ -1,6 +1,8 @@
 package com.example.eventmanagement.controller;
 
+import com.example.clientservice.dto.PublicClientDTO;
 import com.example.eventmanagement.dto.PackageDTO;
+import com.example.eventmanagement.integration.ClientApiClient;
 import com.example.eventmanagement.mapper.PackageMapper;
 import com.example.eventmanagement.model.PackageEntity;
 import com.example.eventmanagement.model.UserEntity;
@@ -32,6 +34,9 @@ public class PackageController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ClientApiClient clientApiClient;
 
     private Map<String, Object> wrap(Object data, Map<String, String> links) {
         Map<String, Object> resp = new LinkedHashMap<>();
@@ -142,4 +147,21 @@ public class PackageController {
         packageService.deletePackage(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{packageId}/clients")
+    public ResponseEntity<List<PublicClientDTO>> getClientsForPackage(
+            @PathVariable Integer packageId,
+            @RequestParam Integer ownerId) {
+
+        var pkg = packageService.getPackageById(packageId)
+                .orElseThrow(() -> new IllegalArgumentException("Pachetul nu există."));
+
+        if (!pkg.getOwner().getId().equals(ownerId)) {
+            return ResponseEntity.status(403).build();
+        }
+
+        List<PublicClientDTO> clients = clientApiClient.getClientsByPackage(packageId);
+        return ResponseEntity.ok(clients);
+    }
+
 }

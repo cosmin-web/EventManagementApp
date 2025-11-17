@@ -1,6 +1,8 @@
 package com.example.eventmanagement.controller;
 
+import com.example.clientservice.dto.PublicClientDTO;
 import com.example.eventmanagement.dto.EventDTO;
+import com.example.eventmanagement.integration.ClientApiClient;
 import com.example.eventmanagement.mapper.EventMapper;
 import com.example.eventmanagement.model.EventEntity;
 import com.example.eventmanagement.model.UserEntity;
@@ -30,6 +32,9 @@ public class EventController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ClientApiClient clientApiClient;
 
     private Map<String, Object> wrap(Object data, Map<String, String> links) {
         Map<String, Object> response = new LinkedHashMap<>();
@@ -142,4 +147,21 @@ public class EventController {
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{eventId}/clients")
+    public ResponseEntity<List<PublicClientDTO>> getClientsForEvent(
+            @PathVariable Integer eventId,
+            @RequestParam Integer ownerId) {
+
+        var event = eventService.getEventById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista."));
+
+        if (!event.getOwner().getId().equals(ownerId)) {
+            return ResponseEntity.status(403).build();
+        }
+
+        List<PublicClientDTO> clients = clientApiClient.getClientsByEvent(eventId);
+        return ResponseEntity.ok(clients);
+    }
+
 }
