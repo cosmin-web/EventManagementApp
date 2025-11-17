@@ -3,11 +3,10 @@ package com.example.clientservice.model;
 public class TicketRef {
 
     private String cod;
-    private String tip;     //event sau package
+    private String tip;
     private Integer eventId;
     private Integer packageId;
 
-    //getters si setters
     public String getCod() { return cod; }
     public void setCod(String cod) { this.cod = cod; }
 

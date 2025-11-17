@@ -1,6 +1,5 @@
 package com.example.clientservice.controller;
 
-
 import com.example.clientservice.dto.ClientDTO;
 import com.example.clientservice.mapper.ClientMapper;
 import com.example.clientservice.model.ClientDocument;
@@ -23,17 +22,21 @@ public class ClientCrudController {
 
     @GetMapping
     public ResponseEntity<List<ClientDTO>> getClients(@RequestParam(required = false) String name) {
-
         List<ClientDocument> clients = clientService.findAlls(name);
-        var list = clients.stream()
-                .map(ClientMapper::toDTO)
-                .toList();
-
+        var list = clients.stream().map(ClientMapper::toDTO).toList();
         return ResponseEntity.ok(list);
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<ClientDTO> getClientByEmail(@PathVariable String email) {
+    @GetMapping("/{id}")
+    public ResponseEntity<ClientDTO> getClientById(@PathVariable String id) {
+        return clientService.findById(id)
+                .map(ClientMapper::toDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/by-email")
+    public ResponseEntity<ClientDTO> getClientByEmail(@RequestParam String email) {
         return clientService.findByEmail(email)
                 .map(ClientMapper::toDTO)
                 .map(ResponseEntity::ok)
@@ -41,18 +44,24 @@ public class ClientCrudController {
     }
 
     @PostMapping
-    public ResponseEntity<ClientDTO> upClient(@RequestBody ClientDTO dto) {
-        ClientDocument doc = ClientMapper.toDocument(dto);
-        ClientDocument saved = clientService.updateClient(doc);
+    public ResponseEntity<ClientDTO> createOrUpdateByEmail(@RequestBody ClientDTO dto) {
+        ClientDocument saved = clientService.updateByEmail(ClientMapper.toDocument(dto));
         ClientDTO savedDto = ClientMapper.toDTO(saved);
 
-        return ResponseEntity.created(URI.create("/api/client-service/clients/" + savedDto.getEmail()))
-                .body(savedDto);
+        return ResponseEntity.created(
+                URI.create("/api/client-service/clients/" + savedDto.getId())
+        ).body(savedDto);
     }
 
-    @DeleteMapping("/{email}")
-    public ResponseEntity<Void> deleteClient(@PathVariable String email) {
-        clientService.delete(email);
+    @PutMapping("/{id}")
+    public ResponseEntity<ClientDTO> updateClient(@PathVariable String id, @RequestBody ClientDTO dto) {
+        ClientDocument saved = clientService.updateById(id, ClientMapper.toDocument(dto));
+        return ResponseEntity.ok(ClientMapper.toDTO(saved));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteClient(@PathVariable String id) {
+        clientService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

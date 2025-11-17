@@ -1,6 +1,7 @@
 package com.example.clientservice.mapper;
 
 import com.example.clientservice.dto.ClientDTO;
+import com.example.clientservice.dto.PublicClientDTO;
 import com.example.clientservice.dto.TicketDTO;
 import com.example.clientservice.model.ClientDocument;
 import com.example.clientservice.model.TicketRef;
@@ -13,6 +14,7 @@ public class ClientMapper {
 
     public static ClientDTO toDTO(ClientDocument d) {
         ClientDTO dto = new ClientDTO();
+        dto.setId(d.getId());
         dto.setEmail(d.getEmail());
         dto.setNume(d.getNume());
         dto.setPrenume(d.getPrenume());
@@ -29,6 +31,7 @@ public class ClientMapper {
 
     public static ClientDocument toDocument(ClientDTO dto) {
         ClientDocument d = new ClientDocument();
+        d.setId(dto.getId());
         d.setEmail(dto.getEmail());
         d.setNume(dto.getNume());
         d.setPrenume(dto.getPrenume());
@@ -60,4 +63,21 @@ public class ClientMapper {
         ref.setPackageId(dto.getPackageId());
         return ref;
     }
+
+
+    public static PublicClientDTO toPublicDTO(ClientDocument d) {
+        PublicClientDTO dto = new PublicClientDTO();
+        dto.setId(d.getId());
+        dto.setEmail(d.getEmail());
+        dto.setNume(d.getNume());
+        dto.setPrenume(d.getPrenume());
+
+        List<TicketRef> bilete = d.getBilete() != null ? d.getBilete() : List.of();
+        dto.setBilete(bilete.stream()
+                .map(ClientMapper::toTicketDTO)
+                .toList());
+
+        return dto;
+    }
+
 }

@@ -2,7 +2,6 @@ package com.example.clientservice.service;
 
 import com.example.clientservice.model.ClientDocument;
 import com.example.clientservice.repository.ClientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -21,10 +20,6 @@ public class ClientService {
         return repo.findById(id);
     }
 
-    public void deleteById(String id) {
-        repo.deleteById(id);
-    }
-
     public List<ClientDocument> findAlls(String nameLike) {
         if (!StringUtils.hasText(nameLike)) {
             return repo.findAll();
@@ -39,17 +34,60 @@ public class ClientService {
     }
 
     public Optional<ClientDocument> findByEmail(String email) {
-        return repo.findById(email);
+        return repo.findByEmail(email);
     }
 
-    public ClientDocument updateClient(ClientDocument document) {
-        if(document.getEmail() == null || document.getEmail().isBlank()) {
+    public ClientDocument updateByEmail(ClientDocument document) {
+        if (document.getEmail() == null || document.getEmail().isBlank()) {
             throw new IllegalArgumentException("Campul 'email' este obligatoriu.");
         }
-        return repo.save(document);
+
+        return repo.findByEmail(document.getEmail())
+                .map(existing -> {
+                    existing.setNume(document.getNume());
+                    existing.setPrenume(document.getPrenume());
+                    existing.setPublic(document.isPublic());
+                    existing.setSocial(document.getSocial());
+                    return repo.save(existing);
+                })
+                .orElseGet(() -> repo.save(document));
     }
 
-    public void delete(String email) {
-        repo.deleteById(email);
+    public ClientDocument updateById(String id, ClientDocument document) {
+        return repo.findById(id)
+                .map(existing -> {
+                    existing.setEmail(document.getEmail());
+                    existing.setNume(document.getNume());
+                    existing.setPrenume(document.getPrenume());
+                    existing.setPublic(document.isPublic());
+                    existing.setSocial(document.getSocial());
+                    return repo.save(existing);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Clientul nu exista."));
     }
+
+    public void deleteById(String id) {
+        repo.deleteById(id);
+    }
+
+    public List<ClientDocument> findClientsByEventId(Integer eventId) {
+        return repo.findAll().stream()
+                .filter(client -> client.getBilete() != null)
+                .filter(client -> client.getBilete().stream()
+                        .anyMatch(b -> "event".equals(b.getTip()) &&
+                                eventId.equals(b.getEventId())))
+                .toList();
+    }
+
+    public List<ClientDocument> findClientsByPackageId(Integer packageId) {
+        return repo.findAll().stream()
+                .filter(client -> client.getBilete() != null)
+                .filter(client -> client.getBilete().stream()
+                        .anyMatch(b ->
+                                "package".equals(b.getTip()) &&
+                                        packageId.equals(b.getPackageId())
+                        ))
+                .toList();
+    }
+
 }
