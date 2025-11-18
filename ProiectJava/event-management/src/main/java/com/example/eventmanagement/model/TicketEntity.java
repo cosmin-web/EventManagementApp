@@ -6,16 +6,16 @@ import jakarta.persistence.*;
 @Table(name = "bilete")
 public class TicketEntity {
 
-    @Id
-    private String cod;
+    @ManyToOne
+    @JoinColumn(name = "eveniment_id")
+    private EventEntity eveniment;
 
     @ManyToOne
     @JoinColumn(name = "pachet_id")
     private PackageEntity pachet;
 
-    @ManyToOne
-    @JoinColumn(name = "eveniment_id")
-    private EventEntity eveniment;
+    @Id
+    private String cod;
 
     public TicketEntity() {}
 

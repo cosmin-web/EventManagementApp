@@ -22,47 +22,54 @@ public class ClientTicketsService {
     }
 
     public Optional<TicketData> validateTicket(String email, String cod, boolean saveIfValid) {
-        var data = eventApiClient.validateAndFetchTicket(cod);
+        TicketData data = eventApiClient.validateAndFetchTicket(cod);
+
         if (data == null) {
-            return Optional.empty();
+            throw new RuntimeException("Biletul nu a fost gasit.");
+        }
+
+        TicketRef ref = new TicketRef();
+        ref.setCod(cod);
+
+        if (data.getEvent() != null) {
+            ref.setTip("event");
+            ref.setEventId(data.getEvent().getId());
+        } else if (data.get_package() != null) {
+            ref.setTip("package");
+            ref.setPackageId(data.get_package().getId());
+        } else {
+            throw new RuntimeException("Bilet invalid.");
         }
 
         if (saveIfValid) {
-            ClientDocument client = repo.findByEmail(email).orElseGet(() -> {
-                ClientDocument c = new ClientDocument();
-                c.setEmail(email);
-                return c;
-            });
+            ClientDocument client = repo.findByEmail(email).orElse(null);
 
-            boolean exists = client.getBilete().stream()
-                    .anyMatch(t -> cod.equals(t.getCod()));
-
-            if (!exists) {
-                TicketRef ref = new TicketRef();
-                ref.setCod(cod);
-                if (data.getEvent() != null) {
-                    ref.setTip("event");
-                    ref.setEventId(data.getEvent().getId());
-                } else if (data.get_package() != null) {
-                    ref.setTip("package");
-                    ref.setPackageId(data.get_package().getId());
-                }
-                client.getBilete().add(ref);
-                repo.save(client);
+            if (client == null) {
+                client = new ClientDocument();
+                client.setEmail(email);
+                client.setBilete(new ArrayList<>());
             }
+
+            client.getBilete().add(ref);
+            repo.save(client);
         }
 
         return Optional.of(data);
     }
 
     public List<TicketData> listDetailedTickets(String email) {
-        return repo.findByEmail(email)
-                .map(ClientDocument::getBilete)
-                .orElseGet(List::of)
-                .stream()
-                .map(TicketRef::getCod)
-                .map(eventApiClient::validateAndFetchTicket)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        ClientDocument client = repo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Clientul nu a fost gasit."));
+
+        List<TicketData> result = new ArrayList<>();
+
+        for (TicketRef ref : client.getBilete()) {
+            TicketData data = eventApiClient.validateAndFetchTicket(ref.getCod());
+            if (data != null) {
+                result.add(data);
+            }
+        }
+
+        return result;
     }
 }

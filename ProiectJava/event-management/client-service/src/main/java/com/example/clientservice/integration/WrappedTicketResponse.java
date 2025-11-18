@@ -1,5 +1,8 @@
 package com.example.clientservice.integration;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WrappedTicketResponse {
     private TicketData data;
 

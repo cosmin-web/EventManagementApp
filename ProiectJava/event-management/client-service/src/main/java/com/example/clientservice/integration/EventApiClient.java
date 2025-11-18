@@ -24,7 +24,6 @@ public class EventApiClient {
                 .bodyToMono(WrappedTicketResponse.class)
                 .map(WrappedTicketResponse::getData)
                 .onErrorResume(e -> {
-                    System.out.println("[EventApiClient] Error fetching ticket " + cod + ": " + e.getMessage());
                     return Mono.empty();
                 })
                 .block();

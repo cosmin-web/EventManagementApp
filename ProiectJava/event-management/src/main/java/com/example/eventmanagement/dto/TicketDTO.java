@@ -3,15 +3,16 @@ package com.example.eventmanagement.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class TicketDTO {
+    private Integer eventId;
+    private Integer packageId;
+
     @NotBlank(message = "Codul biletului este obligatoriu")
     private String cod;
 
-    private Integer packageId;
-    private Integer eventId;
 
     public TicketDTO() {}
 
-    public TicketDTO(String cod, Integer packageId, Integer eventId) {
+    public TicketDTO(Integer eventId, Integer packageId, String cod) {
         this.cod = cod;
         this.packageId = packageId;
         this.eventId = eventId;
