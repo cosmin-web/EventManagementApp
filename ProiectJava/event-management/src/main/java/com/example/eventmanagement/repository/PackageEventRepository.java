@@ -12,7 +12,6 @@ public interface PackageEventRepository extends JpaRepository<PackageEvent, Pack
 {
     List<PackageEvent> findByPachet(PackageEntity pachet);
     List<PackageEvent> findByEveniment(EventEntity eveniment);
-    List<PackageEvent> findByNumarLocuri(Integer numarLocuri);
     void deleteByPachet(PackageEntity pachet);
     void deleteByEveniment(EventEntity eveniment);
     void deleteByPachetAndEveniment(PackageEntity pachet, EventEntity eveniment);

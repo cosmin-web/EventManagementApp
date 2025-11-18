@@ -21,7 +21,18 @@ public class UserEntity {
     private Role rol;
 
     public enum Role {
-        ADMIN, OWNER_EVENT, CLIENT
+        ADMIN, OWNER_EVENT, CLIENT;
+
+        @com.fasterxml.jackson.annotation.JsonCreator
+        public static Role fromString(String value) {
+            if (value == null) {
+                return null;
+            }
+
+            value = value.trim().toUpperCase().replace("-", "_");
+
+            return Role.valueOf(value);
+        }
     }
 
     public UserEntity() {}

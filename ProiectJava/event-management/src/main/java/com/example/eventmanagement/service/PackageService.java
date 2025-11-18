@@ -47,6 +47,7 @@ public class PackageService {
                     p.setNume(updated.getNume());
                     p.setLocatie(updated.getLocatie());
                     p.setDescriere(updated.getDescriere());
+                    p.setNumarLocuri(updated.getNumarLocuri());
                     return packageRepository.save(p);
         }).orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista."));
     }
@@ -64,26 +65,33 @@ public class PackageService {
     }
 
     public Integer calculeazaLocuriDisponibile(PackageEntity pachet) {
+        Integer capacityPerPackage = pachet.getNumarLocuri();
+        if (capacityPerPackage == null || capacityPerPackage <= 0) {
+            return 0;
+        }
+
         int packageTicketsSold = ticketRepository.findByPachet(pachet).size();
+        int remainingByPackageCapacity = capacityPerPackage - packageTicketsSold;
+        if (remainingByPackageCapacity <= 0) return 0;
 
         var legaturi = packageEventRepository.findByPachet(pachet);
-        if (legaturi.isEmpty()) return 0;
+        if (legaturi.isEmpty()) {
+            return 0;
+        }
 
-        int limitPerPackage = legaturi.stream().mapToInt(pe -> {
-            var ev = pe.getEveniment();
+        int remainingByEvents = legaturi.stream()
+                .mapToInt(pe -> {
+                    var ev = pe.getEveniment();
+                    int eventCapacity = ev.getNumarLocuri() != null ? ev.getNumarLocuri() : 0;
+                    int eventTicketsSold = ticketRepository.findByEveniment(ev).size();
 
-            int capacity = pe.getNumarLocuri() != null
-                    ? pe.getNumarLocuri()
-                    : (ev.getNumarLocuri() != null ? ev.getNumarLocuri() : 0);
+                    int remainingForEvent = eventCapacity - eventTicketsSold - packageTicketsSold;
+                    return Math.max(remainingForEvent, 0);
+                })
+                .min()
+                .orElse(0);
 
-            int eventTicketsSold = ticketRepository.findByEveniment(ev).size();
-
-            int remainingForThisEvent = capacity - eventTicketsSold - packageTicketsSold;
-
-            return Math.max(remainingForThisEvent, 0);
-        }).min().orElse(0);
-
-        return Math.max(limitPerPackage, 0);
+        return Math.max(Math.min(remainingByPackageCapacity, remainingByEvents), 0);
     }
 
     public Page<PackageEntity> searchPackages(String name, String type, String eventName, Integer availableTickets, int page, int size) {

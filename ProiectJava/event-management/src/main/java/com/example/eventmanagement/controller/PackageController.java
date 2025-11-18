@@ -1,6 +1,6 @@
 package com.example.eventmanagement.controller;
 
-import com.example.clientservice.dto.PublicClientDTO;
+import com.example.eventmanagement.dto.client.PublicClientDTO;
 import com.example.eventmanagement.dto.PackageDTO;
 import com.example.eventmanagement.integration.ClientApiClient;
 import com.example.eventmanagement.mapper.PackageMapper;

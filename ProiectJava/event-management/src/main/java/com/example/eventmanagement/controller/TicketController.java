@@ -70,7 +70,8 @@ public class TicketController {
                     "id", p.getId(),
                     "nume", p.getNume(),
                     "locatie", p.getLocatie(),
-                    "descriere", p.getDescriere()
+                    "descriere", p.getDescriere(),
+                    "numarLocuri", p.getNumarLocuri()
             ));
         }
 

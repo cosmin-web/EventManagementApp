@@ -2,6 +2,7 @@ package com.example.eventmanagement.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class PackageDTO {
 
@@ -18,6 +19,10 @@ public class PackageDTO {
 
     private String descriere;
 
+    @NotNull(message = "Numarul de locuri este obligatoriu")
+    @Positive(message = "Numarul de locuri trebuie sa fie pozitiv")
+    private Integer numarLocuri;
+
     //campuri noi
     private String ownerEmail;
     private Integer numberOfEvents;
@@ -25,12 +30,14 @@ public class PackageDTO {
 
     public PackageDTO() {}
 
-    public PackageDTO(Integer id, Integer ownerId, String nume, String locatie, String descriere) {
+    public PackageDTO(Integer id, Integer ownerId, String nume, String locatie, String descriere, Integer numarLocuri) {
         this.id = id;
         this.ownerId = ownerId;
         this.nume = nume;
         this.locatie = locatie;
         this.descriere = descriere;
+        this.numarLocuri = numarLocuri;
+
     }
 
     public Integer getId() { return id; }
@@ -56,4 +63,7 @@ public class PackageDTO {
 
     public Integer getAvailableTickets() { return availableTickets; }
     public void setAvailableTickets(Integer availableTickets) { this.availableTickets = availableTickets; }
+
+    public Integer getNumarLocuri() { return numarLocuri; }
+    public void setNumarLocuri(Integer numarLocuri) { this.numarLocuri = numarLocuri; }
 }

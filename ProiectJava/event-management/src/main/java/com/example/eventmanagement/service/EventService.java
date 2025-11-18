@@ -6,8 +6,6 @@ import com.example.eventmanagement.repository.EventRepository;
 import com.example.eventmanagement.repository.PackageEventRepository;
 import com.example.eventmanagement.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Page;

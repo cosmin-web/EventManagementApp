@@ -22,7 +22,7 @@ public class UserMapper {
         entity.setId(dto.getId());
         entity.setEmail(dto.getEmail());
         entity.setParola(parola != null ? parola : "defaultPassword");
-        entity.setRol(UserEntity.Role.valueOf(dto.getRol()));
+        entity.setRol(UserEntity.Role.fromString(dto.getRol()));
         return entity;
     }
 }

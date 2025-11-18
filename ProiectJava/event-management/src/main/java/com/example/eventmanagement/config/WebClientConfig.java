@@ -10,10 +10,11 @@ public class WebClientConfig {
 
     @Bean
     public WebClient clientServiceWebClient(
-            @Value("${client.client-service.base-url}") String baseUrl) {
+            @Value("${client.client-service.base-url:http://client-service:8082/api/client-service}") String baseUrl) {
 
         return WebClient.builder()
                 .baseUrl(baseUrl)
                 .build();
     }
 }
+

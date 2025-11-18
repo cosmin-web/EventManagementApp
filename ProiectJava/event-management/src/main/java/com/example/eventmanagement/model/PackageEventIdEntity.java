@@ -1,5 +1,7 @@
 package com.example.eventmanagement.model;
 
+import jakarta.persistence.Column;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -15,19 +17,11 @@ public class PackageEventIdEntity implements Serializable {
         this.eveniment = eveniment;
     }
 
-    public Integer getPachet() {
-        return pachet;
-    }
-    public void setPachet(Integer pachet) {
-        this.pachet = pachet;
-    }
+    public Integer getPachet() { return pachet; }
+    public void setPachet(Integer pachet) { this.pachet = pachet; }
 
-    public Integer getEveniment() {
-        return eveniment;
-    }
-    public void setEveniment(Integer eveniment) {
-        this.eveniment = eveniment;
-    }
+    public Integer getEveniment() { return eveniment; }
+    public void setEveniment(Integer eveniment) { this.eveniment = eveniment; }
 
     @Override
     public boolean equals(Object o) {

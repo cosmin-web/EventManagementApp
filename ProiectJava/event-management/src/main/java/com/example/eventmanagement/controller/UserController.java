@@ -45,7 +45,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Lista utilizatorilor a fost returnata.")
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> getAllUsers() {
-        var list = userService.getAllUsers().stream()
+        var list = userService.getAllUsers2().stream()
                 .map(UserMapper::fromEntity)
                 .map(u -> wrap(u, userLinks(u.getId())))
                 .collect(Collectors.toList());

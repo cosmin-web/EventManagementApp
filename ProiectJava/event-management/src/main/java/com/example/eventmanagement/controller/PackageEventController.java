@@ -64,7 +64,6 @@ public class PackageEventController {
 
         dto.setPackageId(pachet.getId());
         dto.setEventId(event.getId());
-        dto.setNumarLocuri(relation.getNumarLocuri());
 
         dto.setPackageName(pachet.getNume());
         dto.setEventName(event.getNume());
@@ -115,7 +114,7 @@ public class PackageEventController {
     public ResponseEntity<Map<String, Object>> createEventToPackage(
             @PathVariable Integer packetId,
             @PathVariable Integer eventId,
-            @RequestBody(required = false) PackageEventDTO dto) {
+            @RequestBody(required = false) PackageEventDTO body) {
 
         PackageEntity pachet = packageService.getPackageById(packetId)
                 .orElseThrow(()-> new IllegalArgumentException("Acest pachet nu exista"));
@@ -123,10 +122,16 @@ public class PackageEventController {
         EventEntity eveniment = eventService.getEventById(eventId)
                 .orElseThrow(()-> new IllegalArgumentException("Acest eveniment nu exista"));
 
-        Integer numarLocuri = dto != null ? dto.getNumarLocuri() : null;
+        if (packageEventService.getRelation(pachet, eveniment).isPresent()) {
+            throw new IllegalArgumentException("Evenimentul este deja asociat cu acest pachet.");
+        }
 
-        PackageEvent relation = packageEventService.addEventToPackage(pachet, eveniment, numarLocuri);
-        return ResponseEntity.ok(wrap(relation, packageToEventLinks(packetId, eventId)));
+        PackageEvent relation = packageEventService.addEventToPackage(pachet, eveniment);
+        PackageEventDTO dto = enrichRelation(relation);
+
+        return ResponseEntity.ok(
+                wrap(dto, packageToEventLinks(dto.getPackageId(), dto.getEventId()))
+        );
     }
 
     @Operation(summary = "Sterge un eveniment dintr-un pachet")

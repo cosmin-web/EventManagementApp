@@ -20,14 +20,18 @@ public class PackageEntity {
     private String locatie;
     private String descriere;
 
+    @Column(name = "numarLocuri")
+    private Integer numarLocuri;
+
     public PackageEntity() {}
 
-    public PackageEntity(Integer id, UserEntity owner, String nume, String locatie, String descriere) {
+    public PackageEntity(Integer id, UserEntity owner, String nume, String locatie, String descriere, Integer numarLocuri) {
         this.id = id;
         this.owner = owner;
         this.nume = nume;
         this.locatie = locatie;
         this.descriere = descriere;
+        this.numarLocuri = numarLocuri;
     }
 
     public Integer getId() {
@@ -64,4 +68,7 @@ public class PackageEntity {
     public void setDescriere(String descriere) {
         this.descriere = descriere;
     }
+
+    public Integer getNumarLocuri() { return numarLocuri; }
+    public void setNumarLocuri(Integer numarLocuri) { this.numarLocuri = numarLocuri; }
 }

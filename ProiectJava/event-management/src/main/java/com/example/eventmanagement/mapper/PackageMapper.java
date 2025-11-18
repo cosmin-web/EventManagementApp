@@ -14,7 +14,8 @@ public class PackageMapper {
                 entity.getOwner().getId(),
                 entity.getNume(),
                 entity.getLocatie(),
-                entity.getDescriere()
+                entity.getDescriere(),
+                entity.getNumarLocuri()
         );
 
         //adaugare campuri noi
@@ -35,6 +36,7 @@ public class PackageMapper {
         entity.setNume(dto.getNume());
         entity.setLocatie(dto.getLocatie());
         entity.setDescriere(dto.getDescriere());
+        entity.setNumarLocuri(dto.getNumarLocuri());
         return entity;
     }
 }

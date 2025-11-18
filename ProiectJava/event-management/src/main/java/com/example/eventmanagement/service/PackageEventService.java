@@ -36,8 +36,8 @@ public class PackageEventService {
         return packageEventRepository.findByPachet(pachet);
     }
 
-    public PackageEvent addEventToPackage(PackageEntity pachet, EventEntity eveniment, Integer numarLocuri) {
-        PackageEvent relation = new PackageEvent(pachet, eveniment, numarLocuri);
+    public PackageEvent addEventToPackage(PackageEntity pachet, EventEntity eveniment) {
+        PackageEvent relation = new PackageEvent(pachet, eveniment);
         return packageEventRepository.save(relation);
     }
 

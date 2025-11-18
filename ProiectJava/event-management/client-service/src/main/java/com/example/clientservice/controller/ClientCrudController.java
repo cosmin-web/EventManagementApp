@@ -35,8 +35,8 @@ public class ClientCrudController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/by-email")
-    public ResponseEntity<ClientDTO> getClientByEmail(@RequestParam String email) {
+    @GetMapping("/email/{email}")
+    public ResponseEntity<ClientDTO> getClientByEmail(@PathVariable String email) {
         return clientService.findByEmail(email)
                 .map(ClientMapper::toDTO)
                 .map(ResponseEntity::ok)

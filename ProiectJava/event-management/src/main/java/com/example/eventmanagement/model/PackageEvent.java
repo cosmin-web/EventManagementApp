@@ -17,14 +17,11 @@ public class PackageEvent {
     @JoinColumn(name = "eveniment_id", nullable = false)
     private EventEntity eveniment;
 
-    private Integer numarLocuri;
-
     public PackageEvent() {}
 
-    public PackageEvent(PackageEntity pachet, EventEntity eveniment, Integer numarLocuri) {
+    public PackageEvent(PackageEntity pachet, EventEntity eveniment) {
         this.pachet = pachet;
         this.eveniment = eveniment;
-        this.numarLocuri = numarLocuri;
     }
 
     public PackageEntity getPachet() {
@@ -39,12 +36,5 @@ public class PackageEvent {
     }
     public void setEveniment(EventEntity eveniment) {
         this.eveniment = eveniment;
-    }
-
-    public Integer getNumarLocuri() {
-        return numarLocuri;
-    }
-    public void setNumarLocuri(Integer numarLocuri) {
-        this.numarLocuri = numarLocuri;
     }
 }

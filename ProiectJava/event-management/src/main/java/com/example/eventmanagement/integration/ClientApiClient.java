@@ -1,6 +1,7 @@
 package com.example.eventmanagement.integration;
 
-import com.example.clientservice.dto.PublicClientDTO;
+import com.example.eventmanagement.dto.client.PublicClientDTO;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 

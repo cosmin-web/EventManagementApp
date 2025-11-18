@@ -1,4 +1,13 @@
 SET NAMES utf8mb4;
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS pachete_evenimente;
+DROP TABLE IF EXISTS bilete;
+DROP TABLE IF EXISTS evenimente;
+DROP TABLE IF EXISTS pachete;
+DROP TABLE IF EXISTS utilizatori;
+
 CREATE DATABASE IF NOT EXISTS eventdb CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE eventdb;
 
@@ -7,7 +16,7 @@ CREATE TABLE utilizatori (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     parola VARCHAR(255) NOT NULL,
-    rol ENUM('admin', 'owner-event', 'client') NOT NULL
+    rol ENUM('ADMIN', 'OWNER_EVENT', 'CLIENT') NOT NULL
 );
 
 -- EVENIMENTE
@@ -28,6 +37,7 @@ CREATE TABLE pachete (
     nume VARCHAR(255) NOT NULL UNIQUE,
     locatie VARCHAR(255),
     descriere VARCHAR(255),
+    numarLocuri INT,
     FOREIGN KEY (id_owner) REFERENCES utilizatori(id)
 );
 
@@ -35,7 +45,6 @@ CREATE TABLE pachete (
 CREATE TABLE pachete_evenimente (
     pachet_id INT NOT NULL,
     eveniment_id INT NOT NULL,
-    numarLocuri INT,
     PRIMARY KEY (pachet_id, eveniment_id),
     FOREIGN KEY (pachet_id) REFERENCES pachete(id) ON DELETE CASCADE,
     FOREIGN KEY (eveniment_id) REFERENCES evenimente(id) ON DELETE CASCADE
@@ -50,3 +59,5 @@ CREATE TABLE bilete (
     FOREIGN KEY (pachet_id) REFERENCES pachete(id),
     FOREIGN KEY (eveniment_id) REFERENCES evenimente(id)
 );
+
+SET FOREIGN_KEY_CHECKS = 1;
