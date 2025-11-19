@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/client-service/clients/public")
-@Tag(name = "Public Clients", description = "Acces public la datele clientilor")
+@Tag(name = "Public Clients", description = "Acces public la informații despre clienți care au bilete")
 public class ClientPublicController {
 
     private final ClientService clientService;
@@ -39,32 +39,63 @@ public class ClientPublicController {
         );
     }
 
-    @Operation(summary = "Clienti care au bilete pentru un eveniment")
-    @ApiResponse(responseCode = "200", description = "Lista returnata.")
+    @Operation(summary = "Lista paginata de clienti care au bilete la un eveniment")
+    @ApiResponse(responseCode = "200", description = "Lista de clienti a fost returnata.")
     @GetMapping("/by-event/{eventId}")
-    public ResponseEntity<List<Map<String, Object>>> getClientsByEvent(@PathVariable Integer eventId) {
-        List<ClientDocument> clients = clientService.findClientsByEventId(eventId);
+    public ResponseEntity<Map<String, Object>> getClientsByEvent(
+            @PathVariable Integer eventId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
 
-        var data = clients.stream()
+        List<ClientDocument> all = clientService.findClientsByEventId(eventId);
+
+        int start = page * size;
+        int end = Math.min(start + size, all.size());
+
+        List<ClientDocument> paginated =
+                start >= all.size() ? List.of() : all.subList(start, end);
+
+        var content = paginated.stream()
                 .map(ClientMapper::toPublicDTO)
                 .map(dto -> wrap(dto, publicLinks(dto.getId())))
                 .toList();
 
-        return ResponseEntity.ok(data);
+        Map<String, Object> resp = new LinkedHashMap<>();
+        resp.put("content", content);
+        resp.put("currentPage", page);
+        resp.put("totalItems", all.size());
+        resp.put("totalPages", (int) Math.ceil(all.size() / (double) size));
+
+        return ResponseEntity.ok(resp);
     }
 
-    @Operation(summary = "Clienti care au bilete pentru un pachet")
-    @ApiResponse(responseCode = "200", description = "Lista returnata.")
+    @Operation(summary = "Lista paginata de clienti care au bilete pentru un pachet")
+    @ApiResponse(responseCode = "200", description = "Lista de clienti a fost returnata.")
     @GetMapping("/by-package/{packageId}")
-    public ResponseEntity<List<Map<String, Object>>> getClientsByPackage(@PathVariable Integer packageId) {
+    public ResponseEntity<Map<String, Object>> getClientsByPackage(
+            @PathVariable Integer packageId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
 
-        List<ClientDocument> clients = clientService.findClientsByPackageId(packageId);
+        List<ClientDocument> all = clientService.findClientsByPackageId(packageId);
 
-        var data = clients.stream()
+        int start = page * size;
+        int end = Math.min(start + size, all.size());
+
+        List<ClientDocument> paginated =
+                start >= all.size() ? List.of() : all.subList(start, end);
+
+        var content = paginated.stream()
                 .map(ClientMapper::toPublicDTO)
                 .map(dto -> wrap(dto, publicLinks(dto.getId())))
                 .toList();
 
-        return ResponseEntity.ok(data);
+        Map<String, Object> resp = new LinkedHashMap<>();
+        resp.put("content", content);
+        resp.put("currentPage", page);
+        resp.put("totalItems", all.size());
+        resp.put("totalPages", (int) Math.ceil(all.size() / (double) size));
+
+        return ResponseEntity.ok(resp);
     }
 }

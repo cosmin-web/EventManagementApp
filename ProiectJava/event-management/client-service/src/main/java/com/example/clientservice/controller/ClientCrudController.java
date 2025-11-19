@@ -44,15 +44,31 @@ public class ClientCrudController {
     @Operation(summary = "Listare clienti")
     @ApiResponse(responseCode = "200", description = "Lista de clienti a fost returnata.")
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> getClients(@RequestParam(required = false) String name) {
-        List<ClientDocument> clients = clientService.findAlls(name);
+    public ResponseEntity<Map<String, Object>> getClients(
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
 
-        var data = clients.stream()
+        List<ClientDocument> all = clientService.findAlls(name);
+
+        int start = page * size;
+        int end = Math.min(start + size, all.size());
+
+        List<ClientDocument> paginated =
+                start >= all.size() ? List.of() : all.subList(start, end);
+
+        var content = paginated.stream()
                 .map(ClientMapper::toDTO)
                 .map(dto -> wrap(dto, clientLinks(dto.getId())))
                 .toList();
 
-        return ResponseEntity.ok(data);
+        Map<String, Object> resp = new LinkedHashMap<>();
+        resp.put("content", content);
+        resp.put("currentPage", page);
+        resp.put("totalItems", all.size());
+        resp.put("totalPages", (int) Math.ceil(all.size() / (double) size));
+
+        return ResponseEntity.ok(resp);
     }
 
     @Operation(summary = "Obtine un client dupa ID")

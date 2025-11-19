@@ -51,12 +51,32 @@ public class ClientTicketsController {
                 .orElse(ResponseEntity.badRequest().build());
     }
 
-    @Operation(summary = "Returneaza toate biletele clientului")
-    @ApiResponse(responseCode = "200", description = "Lista de bilete returnata.")
-    @ApiResponse(responseCode = "404", description = "Clientul nu exista.")
+    @Operation(summary = "Lista paginata de bilete detaliate ale clientului")
+    @ApiResponse(responseCode = "200", description = "Lista de bilete a fost returnata.")
     @GetMapping("/{email}/tickets")
-    public ResponseEntity<Map<String, Object>> getClientTickets(@PathVariable String email) {
-        List<TicketData> list = ticketsService.listDetailedTickets(email);
-        return ResponseEntity.ok(wrap(list, ticketLinks(email)));
+    public ResponseEntity<Map<String, Object>> getClientTickets(
+            @PathVariable String email,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
+
+        List<TicketData> all = ticketsService.listDetailedTickets(email);
+
+        int start = page * size;
+        int end = Math.min(start + size, all.size());
+
+        List<TicketData> paginated =
+                start >= all.size() ? List.of() : all.subList(start, end);
+
+        var content = paginated.stream()
+                .map(t -> wrap(t, ticketLinks(email)))
+                .toList();
+
+        Map<String, Object> resp = new LinkedHashMap<>();
+        resp.put("content", content);
+        resp.put("currentPage", page);
+        resp.put("totalItems", all.size());
+        resp.put("totalPages", (int) Math.ceil(all.size() / (double) size));
+
+        return ResponseEntity.ok(resp);
     }
 }
