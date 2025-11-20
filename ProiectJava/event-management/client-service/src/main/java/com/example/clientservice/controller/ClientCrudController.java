@@ -7,6 +7,7 @@ import com.example.clientservice.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -97,7 +98,7 @@ public class ClientCrudController {
     @ApiResponse(responseCode = "201", description = "Client creat.")
     @ApiResponse(responseCode = "200", description = "Client actualizat.")
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createOrUpdateByEmail(@RequestBody ClientDTO dto) {
+    public ResponseEntity<Map<String, Object>> createOrUpdateByEmail(@RequestBody @Valid ClientDTO dto) {
         ClientDocument saved = clientService.updateByEmail(ClientMapper.toDocument(dto));
         ClientDTO savedDto = ClientMapper.toDTO(saved);
 
@@ -110,7 +111,7 @@ public class ClientCrudController {
     @ApiResponse(responseCode = "200", description = "Client actualizat.")
     @ApiResponse(responseCode = "404", description = "Clientul nu exista.")
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateClient(@PathVariable String id, @RequestBody ClientDTO dto) {
+    public ResponseEntity<Map<String, Object>> updateClient(@PathVariable String id, @RequestBody @Valid ClientDTO dto) {
         ClientDocument updated = clientService.updateById(id, ClientMapper.toDocument(dto));
         ClientDTO result = ClientMapper.toDTO(updated);
 
