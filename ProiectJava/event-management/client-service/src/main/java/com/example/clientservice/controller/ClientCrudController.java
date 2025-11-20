@@ -125,4 +125,6 @@ public class ClientCrudController {
         clientService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

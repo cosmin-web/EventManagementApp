@@ -1,7 +1,9 @@
 package com.example.eventmanagement.integration;
 
+import com.example.eventmanagement.dto.client.ClientWrapper;
 import com.example.eventmanagement.dto.client.PublicClientDTO;
 
+import com.example.eventmanagement.dto.client.WrappedClientResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -17,20 +19,28 @@ public class ClientApiClient {
     }
 
     public List<PublicClientDTO> getClientsByEvent(Integer eventId) {
-        return clientServiceWebClient.get()
+
+        WrappedClientResponse response = clientServiceWebClient.get()
                 .uri("/clients/public/by-event/{id}", eventId)
                 .retrieve()
-                .bodyToFlux(PublicClientDTO.class)
-                .collectList()
+                .bodyToMono(WrappedClientResponse.class)
                 .block();
+
+        return response.getContent().stream()
+                .map(ClientWrapper::getData)
+                .toList();
     }
 
     public List<PublicClientDTO> getClientsByPackage(Integer packageId) {
-        return clientServiceWebClient.get()
+
+        WrappedClientResponse response = clientServiceWebClient.get()
                 .uri("/clients/public/by-package/{id}", packageId)
                 .retrieve()
-                .bodyToFlux(PublicClientDTO.class)
-                .collectList()
+                .bodyToMono(WrappedClientResponse.class)
                 .block();
+
+        return response.getContent().stream()
+                .map(ClientWrapper::getData)
+                .toList();
     }
 }

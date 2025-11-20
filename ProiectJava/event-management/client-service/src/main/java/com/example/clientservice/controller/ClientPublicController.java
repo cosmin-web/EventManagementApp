@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/client-service/clients/public")
-@Tag(name = "Public Clients", description = "Acces public la informații despre clienți care au bilete")
+@Tag(name = "Public Clients", description = "Acces public la informatii despre clienti care au bilete")
 public class ClientPublicController {
 
     private final ClientService clientService;
@@ -39,7 +39,7 @@ public class ClientPublicController {
         );
     }
 
-    @Operation(summary = "Lista paginata de clienti care au bilete la un eveniment")
+    @Operation(summary = "Lista paginata de clienti publici care au bilete la un eveniment")
     @ApiResponse(responseCode = "200", description = "Lista de clienti a fost returnata.")
     @GetMapping("/by-event/{eventId}")
     public ResponseEntity<Map<String, Object>> getClientsByEvent(
@@ -47,7 +47,10 @@ public class ClientPublicController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
 
-        List<ClientDocument> all = clientService.findClientsByEventId(eventId);
+        List<ClientDocument> all = clientService.findClientsByEventId(eventId)
+                .stream()
+                .filter(ClientDocument::isPublic)
+                .toList();
 
         int start = page * size;
         int end = Math.min(start + size, all.size());
@@ -69,7 +72,7 @@ public class ClientPublicController {
         return ResponseEntity.ok(resp);
     }
 
-    @Operation(summary = "Lista paginata de clienti care au bilete pentru un pachet")
+    @Operation(summary = "Lista paginata de clienti publici care au bilete pentru un pachet")
     @ApiResponse(responseCode = "200", description = "Lista de clienti a fost returnata.")
     @GetMapping("/by-package/{packageId}")
     public ResponseEntity<Map<String, Object>> getClientsByPackage(
@@ -77,7 +80,10 @@ public class ClientPublicController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
 
-        List<ClientDocument> all = clientService.findClientsByPackageId(packageId);
+        List<ClientDocument> all = clientService.findClientsByPackageId(packageId)
+                .stream()
+                .filter(ClientDocument::isPublic)
+                .toList();
 
         int start = page * size;
         int end = Math.min(start + size, all.size());

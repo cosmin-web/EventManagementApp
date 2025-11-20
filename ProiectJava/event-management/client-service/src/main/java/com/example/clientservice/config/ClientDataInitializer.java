@@ -4,21 +4,28 @@ import com.example.clientservice.model.ClientDocument;
 import com.example.clientservice.repository.ClientRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ClientDataInitializer {
+public class ClientDataInitializer implements ApplicationRunner {
 
-    @Autowired
-    private ClientRepository repo;
+    private final ClientRepository repo;
 
-    @PostConstruct
-    public void init() {
+    public ClientDataInitializer(ClientRepository repo) {
+        this.repo = repo;
+    }
+
+    @Override
+    public void run(ApplicationArguments args) {
+
+        System.out.println(">>> INITIALIZER A PORNIT <<<");
 
         createIfMissing("demo1@local", "Ion", "Popescu");
         createIfMissing("demo2@local", "Maria", "Ionescu");
 
-        System.out.println("ClientDataInitializer: verificare si inserare complete.");
+        System.out.println("ClientDataInitializer: inserare demo finalizata.");
     }
 
     private void createIfMissing(String email, String nume, String prenume) {
@@ -28,7 +35,8 @@ public class ClientDataInitializer {
             c.setNume(nume);
             c.setPrenume(prenume);
             repo.save(c);
-            System.out.println("Adăugat client demo: " + email);
+            System.out.println("Adaugat client demo: " + email);
         }
     }
 }
+

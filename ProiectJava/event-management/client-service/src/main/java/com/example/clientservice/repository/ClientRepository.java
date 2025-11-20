@@ -1,12 +1,13 @@
 package com.example.clientservice.repository;
 
 import com.example.clientservice.model.ClientDocument;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.util.*;
 
-public interface ClientRepository extends MongoRepository<ClientDocument, String> {
+public interface ClientRepository extends MongoRepository<ClientDocument, ObjectId> {
     //metode automate
     //repo.findAll();
     //repo.findById(email);

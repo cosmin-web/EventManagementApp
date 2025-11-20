@@ -14,7 +14,7 @@ public class ClientMapper {
 
     public static ClientDTO toDTO(ClientDocument d) {
         ClientDTO dto = new ClientDTO();
-        dto.setId(d.getId());
+        dto.setId(d.getIdAsString());
         dto.setEmail(d.getEmail());
         dto.setNume(d.getNume());
         dto.setPrenume(d.getPrenume());
@@ -31,7 +31,6 @@ public class ClientMapper {
 
     public static ClientDocument toDocument(ClientDTO dto) {
         ClientDocument d = new ClientDocument();
-        d.setId(dto.getId());
         d.setEmail(dto.getEmail());
         d.setNume(dto.getNume());
         d.setPrenume(dto.getPrenume());
@@ -67,7 +66,7 @@ public class ClientMapper {
 
     public static PublicClientDTO toPublicDTO(ClientDocument d) {
         PublicClientDTO dto = new PublicClientDTO();
-        dto.setId(d.getId());
+        dto.setId(d.getIdAsString());
         dto.setEmail(d.getEmail());
         dto.setNume(d.getNume());
         dto.setPrenume(d.getPrenume());

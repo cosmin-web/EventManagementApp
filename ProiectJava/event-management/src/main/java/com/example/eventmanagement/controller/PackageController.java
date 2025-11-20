@@ -151,17 +151,18 @@ public class PackageController {
     @GetMapping("/{packageId}/clients")
     public ResponseEntity<List<PublicClientDTO>> getClientsForPackage(
             @PathVariable Integer packageId,
-            @RequestParam Integer ownerId) {
+            @RequestParam(required = false) Integer ownerId) {
 
         var pkg = packageService.getPackageById(packageId)
-                .orElseThrow(() -> new IllegalArgumentException("Pachetul nu există."));
+                .orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista."));
 
-        if (!pkg.getOwner().getId().equals(ownerId)) {
+        if (ownerId != null && !pkg.getOwner().getId().equals(ownerId)) {
             return ResponseEntity.status(403).build();
         }
 
         List<PublicClientDTO> clients = clientApiClient.getClientsByPackage(packageId);
         return ResponseEntity.ok(clients);
     }
+
 
 }
