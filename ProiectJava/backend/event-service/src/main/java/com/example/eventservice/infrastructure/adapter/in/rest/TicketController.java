@@ -148,7 +148,7 @@ public class TicketController {
     @ApiResponse(responseCode = "201", description = "Biletul a fost creat cu succes.")
     @ApiResponse(responseCode = "400", description = "Nu mai sunt locuri disponibile sau date invalide.")
     @ApiResponse(responseCode = "404", description = "Evenimentul nu a fost gasit.")
-    @PostMapping("/events/{eventId}/tickets")
+    @PutMapping("/events/{eventId}/tickets")
     public ResponseEntity<Map<String, Object>> createTicketForEvent(@PathVariable Integer eventId) {
         TicketEntity ticket = ticketService.createTicketForEvent(eventId);
         return ResponseEntity.created(URI.create("/api/event-manager/tickets/" + ticket.getCod()))
@@ -159,7 +159,7 @@ public class TicketController {
     @ApiResponse(responseCode = "201", description = "Biletul pentru pachet a fost creat cu succes.")
     @ApiResponse(responseCode = "400", description = "Nu mai sunt locuri disponibile sau date invalide.")
     @ApiResponse(responseCode = "404", description = "Pachetul nu a fost gasit.")
-    @PostMapping("/event-packets/{packetId}/tickets")
+    @PutMapping("/event-packets/{packetId}/tickets")
     public ResponseEntity<Map<String, Object>> createTicketForPackage(@PathVariable Integer packetId) {
         TicketEntity ticket = ticketService.createTicketForPackage(packetId);
         return ResponseEntity.created(URI.create("/api/event-manager/tickets/" + ticket.getCod()))

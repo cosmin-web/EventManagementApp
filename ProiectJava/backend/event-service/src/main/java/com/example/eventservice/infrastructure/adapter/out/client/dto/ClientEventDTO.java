@@ -12,19 +12,17 @@ public class ClientEventDTO {
         this.eventId = eventId;
     }
 
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
     public String getClientId() {
         return clientId;
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public Integer getEventId() {
-        return eventId;
-    }
-
     public void setEventId(Integer eventId) {
         this.eventId = eventId;
+    }
+    public Integer getEventId() {
+        return eventId;
     }
 }
