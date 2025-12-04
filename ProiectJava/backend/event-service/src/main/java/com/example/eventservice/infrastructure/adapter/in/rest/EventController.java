@@ -1,5 +1,7 @@
 package com.example.eventservice.infrastructure.adapter.in.rest;
 
+import com.example.eventservice.application.auth.AuthenticatedUser;
+import com.example.eventservice.application.service.auth.AuthorizationService;
 import com.example.eventservice.infrastructure.adapter.out.client.dto.PublicClientDTO;
 
 import com.example.eventservice.application.dto.EventDTO;
@@ -36,6 +38,9 @@ public class EventController {
 
     @Autowired
     private ClientApiClient clientApiClient;
+
+    @Autowired
+    private AuthorizationService authorizationService;
 
     private Map<String, Object> wrap(Object data, Map<String, String> links) {
         Map<String, Object> response = new LinkedHashMap<>();
@@ -74,11 +79,19 @@ public class EventController {
     @ApiResponse(responseCode = "400", description = "Parametri de filtrare invalizi.")
     @GetMapping
     public ResponseEntity<Map<String, Object>> getEvents(
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String location,
             @RequestParam(required = false, name = "available_tickets") Integer availableTickets,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN,
+                UserEntity.Role.OWNER_EVENT,
+                UserEntity.Role.CLIENT
+        );
 
         var resultPage = eventService.searchEvents(name, location, availableTickets, page, size);
 
@@ -99,7 +112,17 @@ public class EventController {
     @ApiResponse(responseCode = "200", description = "Evenimentul a fost gasit.")
     @ApiResponse(responseCode = "404", description = "Evenimentul nu a fost gasit.")
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getEventById(@PathVariable Integer id) {
+    public ResponseEntity<Map<String, Object>> getEventById(
+            @PathVariable Integer id,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN,
+                UserEntity.Role.OWNER_EVENT,
+                UserEntity.Role.CLIENT
+        );
+
         return eventService.getEventById(id)
                 .map(event -> ResponseEntity.ok(wrap(enrichEvent(event), eventLinks(event.getId()))))
                 .orElse(ResponseEntity.notFound().build());
@@ -111,9 +134,21 @@ public class EventController {
     @ApiResponse(responseCode = "404", description = "Proprietarul nu a fost gasit.")
     @ApiResponse(responseCode = "409", description = "Exista un eveniment cu acest nume.")
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createEvent(@RequestBody @Valid EventDTO dto) {
-        UserEntity owner = userService.getUserById(dto.getOwnerId())
+    public ResponseEntity<Map<String, Object>> createEvent(
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader,
+            @RequestBody @Valid EventDTO dto) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.OWNER_EVENT
+        );
+
+        Integer ownerId = current.getUserId();
+
+        UserEntity owner = userService.getUserById(ownerId)
                 .orElseThrow(() -> new IllegalArgumentException("Proprietarul nu exista."));
+
+        dto.setOwnerId(ownerId);
 
         EventEntity event = EventMapper.toEntity(dto, owner);
         EventEntity saved = eventService.createEvent(event);
@@ -123,15 +158,33 @@ public class EventController {
                 .body(wrap(response, eventLinks(saved.getId())));
     }
 
+
     @Operation(summary = "Actualizeaza un eveniment existent")
     @ApiResponse(responseCode = "200", description = "Evenimentul a fost actualizat.")
     @ApiResponse(responseCode = "400", description = "Date invalide.")
     @ApiResponse(responseCode = "404", description = "Evenimentul nu a fost gasit.")
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateEvent(@PathVariable Integer id,
-                                                           @RequestBody @Valid EventDTO dto) {
-        UserEntity owner = userService.getUserById(dto.getOwnerId())
-                .orElseThrow(() -> new IllegalArgumentException("Proprietarul nu exista."));
+    public ResponseEntity<Map<String, Object>> updateEvent(
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader,
+            @PathVariable Integer id,
+            @RequestBody @Valid EventDTO dto) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.OWNER_EVENT
+        );
+
+        EventEntity existing = eventService.getEventById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista."));
+
+        if (existing.getOwner() == null ||
+                existing.getOwner().getId() == null ||
+                !existing.getOwner().getId().equals(current.getUserId())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        UserEntity owner = existing.getOwner();
+        dto.setOwnerId(owner.getId());
 
         EventEntity entity = EventMapper.toEntity(dto, owner);
         EventEntity updated = eventService.updateEvent(id, entity);
@@ -140,24 +193,50 @@ public class EventController {
         return ResponseEntity.ok(wrap(response, eventLinks(updated.getId())));
     }
 
+
     @Operation(summary = "Sterge un eveniment după ID")
     @ApiResponse(responseCode = "204", description = "Evenimentul a fost sters.")
     @ApiResponse(responseCode = "404", description = "Evenimentul nu a fost gasit.")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteEvent(
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader,
+            @PathVariable Integer id) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.OWNER_EVENT
+        );
+
+        EventEntity existing = eventService.getEventById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista."));
+
+        if (existing.getOwner() == null ||
+                existing.getOwner().getId() == null ||
+                !existing.getOwner().getId().equals(current.getUserId())) {
+            return ResponseEntity.status(403).build();
+        }
+
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
     }
 
+
     @GetMapping("/{eventId}/clients")
     public ResponseEntity<List<PublicClientDTO>> getClientsForEvent(
             @PathVariable Integer eventId,
-            @RequestParam Integer ownerId) {
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.OWNER_EVENT
+        );
+
+        Integer ownerIdFromToken = current.getUserId();
 
         var event = eventService.getEventById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista."));
 
-        if (!event.getOwner().getId().equals(ownerId)) {
+        if (!event.getOwner().getId().equals(ownerIdFromToken)) {
             return ResponseEntity.status(403).build();
         }
 

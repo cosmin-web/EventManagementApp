@@ -1,11 +1,14 @@
 package com.example.eventservice.infrastructure.adapter.in.rest;
 
+import com.example.eventservice.application.auth.AuthenticatedUser;
+import com.example.eventservice.application.service.auth.AuthorizationService;
 import com.example.eventservice.domain.model.EventEntity;
 import com.example.eventservice.domain.model.PackageEntity;
 import com.example.eventservice.domain.model.TicketEntity;
 import com.example.eventservice.application.service.EventService;
 import com.example.eventservice.application.service.PackageService;
 import com.example.eventservice.application.service.TicketService;
+import com.example.eventservice.domain.model.UserEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,6 +35,9 @@ public class TicketController {
 
     @Autowired
     private PackageService packageService;
+
+    @Autowired
+    private AuthorizationService authorizationService;
 
     private Map<String, Object> wrap(Object data, Map<String, String> links) {
         Map<String, Object> resp = new LinkedHashMap<>();
@@ -81,10 +87,17 @@ public class TicketController {
     @ApiResponse(responseCode = "400", description = "Parametri de filtrare invalizi.")
     @GetMapping("/tickets")
     public ResponseEntity<Map<String, Object>> getTickets(
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader,
             @RequestParam(required = false) String eventName,
             @RequestParam(required = false) String packageName,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN,
+                UserEntity.Role.OWNER_EVENT
+        );
 
         var resultPage = ticketService.searchTickets(eventName, packageName, page, size);
 
@@ -106,19 +119,45 @@ public class TicketController {
     @ApiResponse(responseCode = "200", description = "Biletul a fost gasit.")
     @ApiResponse(responseCode = "404", description = "Biletul nu a fost gasit.")
     @GetMapping("/tickets/{cod}")
-    public ResponseEntity<Map<String, Object>> getTicketByCod(@PathVariable String cod) {
+    public ResponseEntity<Map<String, Object>> getTicketByCod(
+            @PathVariable String cod,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN,
+                UserEntity.Role.OWNER_EVENT,
+                UserEntity.Role.CLIENT
+        );
+
         return ticketService.getTicketByCode(cod)
                 .map(t -> ResponseEntity.ok(wrap(enrichTicket(t), ticketLinks(t.getCod()))))
                 .orElse(ResponseEntity.status(404).body(Map.of("error", "Biletul nu exista")));
     }
-
     @Operation(summary = "Listare bilete pentru un eveniment")
     @ApiResponse(responseCode = "200", description = "Lista biletelor pentru eveniment a fost returnata.")
     @ApiResponse(responseCode = "404", description = "Evenimentul nu a fost gasit.")
     @GetMapping("/events/{eventId}/tickets")
-    public ResponseEntity<List<Map<String, Object>>> getAllTicketsFromEvent(@PathVariable Integer eventId) {
+    public ResponseEntity<List<Map<String, Object>>> getAllTicketsFromEvent(
+            @PathVariable Integer eventId,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN,
+                UserEntity.Role.OWNER_EVENT
+        );
+
         EventEntity eveniment = eventService.getEventById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista."));
+
+        if (current.getRole() == UserEntity.Role.OWNER_EVENT) {
+            if (eveniment.getOwner() == null ||
+                    eveniment.getOwner().getId() == null ||
+                    !eveniment.getOwner().getId().equals(current.getUserId())) {
+                return ResponseEntity.status(403).build();
+            }
+        }
 
         var list = ticketService.getTicketsByEvent(eveniment).stream()
                 .map(this::enrichTicket)
@@ -132,9 +171,26 @@ public class TicketController {
     @ApiResponse(responseCode = "200", description = "Lista biletelor pentru pachet a fost returnata.")
     @ApiResponse(responseCode = "404", description = "Pachetul nu a fost gasit.")
     @GetMapping("/event-packets/{packetId}/tickets")
-    public ResponseEntity<List<Map<String, Object>>> getAllTicketsFromPackage(@PathVariable Integer packetId) {
+    public ResponseEntity<List<Map<String, Object>>> getAllTicketsFromPackage(
+            @PathVariable Integer packetId,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN,
+                UserEntity.Role.OWNER_EVENT
+        );
+
         PackageEntity pachet = packageService.getPackageById(packetId)
                 .orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista."));
+
+        if (current.getRole() == UserEntity.Role.OWNER_EVENT) {
+            if (pachet.getOwner() == null ||
+                    pachet.getOwner().getId() == null ||
+                    !pachet.getOwner().getId().equals(current.getUserId())) {
+                return ResponseEntity.status(403).build();
+            }
+        }
 
         var list = ticketService.getTicketsByPackage(pachet).stream()
                 .map(this::enrichTicket)
@@ -149,8 +205,17 @@ public class TicketController {
     @ApiResponse(responseCode = "400", description = "Nu mai sunt locuri disponibile sau date invalide.")
     @ApiResponse(responseCode = "404", description = "Evenimentul nu a fost gasit.")
     @PutMapping("/events/{eventId}/tickets")
-    public ResponseEntity<Map<String, Object>> createTicketForEvent(@PathVariable Integer eventId) {
+    public ResponseEntity<Map<String, Object>> createTicketForEvent(
+            @PathVariable Integer eventId,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.CLIENT
+        );
+
         TicketEntity ticket = ticketService.createTicketForEvent(eventId);
+
         return ResponseEntity.created(URI.create("/api/event-manager/tickets/" + ticket.getCod()))
                 .body(wrap(ticket, ticketLinks(ticket.getCod())));
     }
@@ -160,17 +225,60 @@ public class TicketController {
     @ApiResponse(responseCode = "400", description = "Nu mai sunt locuri disponibile sau date invalide.")
     @ApiResponse(responseCode = "404", description = "Pachetul nu a fost gasit.")
     @PutMapping("/event-packets/{packetId}/tickets")
-    public ResponseEntity<Map<String, Object>> createTicketForPackage(@PathVariable Integer packetId) {
+    public ResponseEntity<Map<String, Object>> createTicketForPackage(
+            @PathVariable Integer packetId,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.CLIENT
+        );
+
         TicketEntity ticket = ticketService.createTicketForPackage(packetId);
+
         return ResponseEntity.created(URI.create("/api/event-manager/tickets/" + ticket.getCod()))
                 .body(wrap(ticket, ticketLinks(ticket.getCod())));
     }
+
 
     @Operation(summary = "Sterge un bilet dupa cod")
     @ApiResponse(responseCode = "204", description = "Biletul a fost sters.")
     @ApiResponse(responseCode = "404", description = "Biletul nu a fost gasit.")
     @DeleteMapping("/tickets/{cod}")
-    public ResponseEntity<Void> deleteTicket(@PathVariable String cod) {
+    public ResponseEntity<Void> deleteTicket(
+            @PathVariable String cod,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN,
+                UserEntity.Role.OWNER_EVENT
+        );
+
+        TicketEntity ticket = ticketService.getTicketByCode(cod)
+                .orElseThrow(() -> new IllegalArgumentException("Biletul nu exista"));
+
+        if (current.getRole() == UserEntity.Role.OWNER_EVENT) {
+            Integer ownerId = current.getUserId();
+            boolean allowed = false;
+
+            EventEntity ev = ticket.getEveniment();
+            if (ev != null && ev.getOwner() != null &&
+                    ownerId.equals(ev.getOwner().getId())) {
+                allowed = true;
+            }
+
+            PackageEntity pkg = ticket.getPachet();
+            if (pkg != null && pkg.getOwner() != null &&
+                    ownerId.equals(pkg.getOwner().getId())) {
+                allowed = true;
+            }
+
+            if (!allowed) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
         ticketService.deleteTicket(cod);
         return ResponseEntity.noContent().build();
     }

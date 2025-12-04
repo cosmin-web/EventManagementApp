@@ -1,7 +1,9 @@
 package com.example.eventservice.infrastructure.adapter.in.rest;
 
+import com.example.eventservice.application.auth.AuthenticatedUser;
 import com.example.eventservice.application.dto.UserDTO;
 import com.example.eventservice.application.mapper.UserMapper;
+import com.example.eventservice.application.service.auth.AuthorizationService;
 import com.example.eventservice.domain.model.UserEntity;
 import com.example.eventservice.application.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +28,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     private Map<String, Object> wrap(Object data, Map<String, String> links) {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("data", data);
@@ -44,7 +49,15 @@ public class UserController {
     @Operation(summary = "Listare utilizatori", description = "Returneaza o lista cu utilizatorii.")
     @ApiResponse(responseCode = "200", description = "Lista utilizatorilor a fost returnata.")
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> getAllUsers() {
+    public ResponseEntity<List<Map<String, Object>>> getAllUsers(
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader
+    ) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN
+        );
+
         var list = userService.getAllUsers2().stream()
                 .map(UserMapper::fromEntity)
                 .map(u -> wrap(u, userLinks(u.getId())))
@@ -56,7 +69,16 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Utilizatorul a fost gasit.")
     @ApiResponse(responseCode = "404", description = "Utilizatorul nu a fost gasit.")
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Integer id) {
+    public ResponseEntity<Map<String, Object>> getUserById(
+            @PathVariable Integer id,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader
+    ) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN
+        );
+
         return userService.getUserById(id)
                 .map(UserMapper::fromEntity)
                 .map(u -> ResponseEntity.ok(wrap(u, userLinks(u.getId()))))
@@ -69,7 +91,15 @@ public class UserController {
     @ApiResponse(responseCode = "400", description = "Date invalide sau lipsa de campuri obligatorii.")
     @ApiResponse(responseCode = "409", description = "Emailul este deja utilizat.")
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createUser(@RequestBody @Valid UserDTO dto) {
+    public ResponseEntity<Map<String, Object>> createUser(
+            @RequestBody @Valid UserDTO dto,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN
+        );
+
         UserEntity entity = UserMapper.toEntity(dto, "defaultPassword");
         UserEntity saved = userService.createUser(entity);
         UserDTO response = UserMapper.fromEntity(saved);
@@ -83,8 +113,16 @@ public class UserController {
     @ApiResponse(responseCode = "400", description = "Date invalide.")
     @ApiResponse(responseCode = "404", description = "Utilizatorul nu a fost gasit.")
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateUser(@PathVariable Integer id,
-                                                          @RequestBody @Valid UserDTO dto) {
+    public ResponseEntity<Map<String, Object>> updateUser(
+            @PathVariable Integer id,
+            @RequestBody @Valid UserDTO dto,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN
+        );
+
         UserEntity updatedEntity = UserMapper.toEntity(dto, "defaultPassword");
         UserEntity saved = userService.updateUser(id, updatedEntity);
         UserDTO response = UserMapper.fromEntity(saved);
@@ -96,7 +134,15 @@ public class UserController {
     @ApiResponse(responseCode = "204", description = "Utilizatorul a fost sters.")
     @ApiResponse(responseCode = "404", description = "Utilizatorul nu a fost gasit.")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable Integer id,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserEntity.Role.ADMIN
+        );
+
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
