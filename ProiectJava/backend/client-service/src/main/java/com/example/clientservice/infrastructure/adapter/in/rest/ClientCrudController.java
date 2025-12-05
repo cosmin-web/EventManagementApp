@@ -1,5 +1,8 @@
 package com.example.clientservice.infrastructure.adapter.in.rest;
 
+import com.example.clientservice.application.auth.AuthenticatedUser;
+import com.example.clientservice.application.auth.AuthorizationService;
+import com.example.clientservice.domain.model.UserRole;
 import com.example.clientservice.application.dto.ClientDTO;
 import com.example.clientservice.application.mapper.ClientMapper;
 import com.example.clientservice.domain.model.ClientDocument;
@@ -8,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +25,11 @@ import java.util.Map;
 @Tag(name = "Clients", description = "Operatii pentru gestionarea clientilor")
 public class ClientCrudController {
 
-    private final ClientService clientService;
+    @Autowired
+    private ClientService clientService;
 
-    public ClientCrudController(ClientService clientService) {
-        this.clientService = clientService;
-    }
+    @Autowired
+    private AuthorizationService authorizationService;
 
     private Map<String, Object> wrap(Object data, Map<String, String> links) {
         Map<String, Object> resp = new LinkedHashMap<>();
@@ -41,14 +45,19 @@ public class ClientCrudController {
         );
     }
 
-
     @Operation(summary = "Listare clienti")
     @ApiResponse(responseCode = "200", description = "Lista de clienti a fost returnata.")
     @GetMapping
     public ResponseEntity<Map<String, Object>> getClients(
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader,
             @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.ADMIN
+        );
 
         List<ClientDocument> all = clientService.findAlls(name);
 
@@ -76,7 +85,15 @@ public class ClientCrudController {
     @ApiResponse(responseCode = "200", description = "Clientul a fost gasit.")
     @ApiResponse(responseCode = "404", description = "Clientul nu exista.")
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getClientById(@PathVariable String id) {
+    public ResponseEntity<Map<String, Object>> getClientById(
+            @PathVariable String id,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.ADMIN
+        );
+
         return clientService.findById(id)
                 .map(ClientMapper::toDTO)
                 .map(dto -> ResponseEntity.ok(wrap(dto, clientLinks(dto.getId()))))
@@ -87,7 +104,15 @@ public class ClientCrudController {
     @ApiResponse(responseCode = "200", description = "Clientul a fost gasit.")
     @ApiResponse(responseCode = "404", description = "Clientul nu exista.")
     @GetMapping("/email/{email}")
-    public ResponseEntity<Map<String, Object>> getClientByEmail(@PathVariable String email) {
+    public ResponseEntity<Map<String, Object>> getClientByEmail(
+            @PathVariable String email,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.ADMIN
+        );
+
         return clientService.findByEmail(email)
                 .map(ClientMapper::toDTO)
                 .map(dto -> ResponseEntity.ok(wrap(dto, clientLinks(dto.getId()))))
@@ -98,7 +123,15 @@ public class ClientCrudController {
     @ApiResponse(responseCode = "201", description = "Client creat.")
     @ApiResponse(responseCode = "200", description = "Client actualizat.")
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createOrUpdateByEmail(@RequestBody @Valid ClientDTO dto) {
+    public ResponseEntity<Map<String, Object>> createOrUpdateByEmail(
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader,
+            @RequestBody @Valid ClientDTO dto) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.ADMIN
+        );
+
         ClientDocument saved = clientService.updateByEmail(ClientMapper.toDocument(dto));
         ClientDTO savedDto = ClientMapper.toDTO(saved);
 
@@ -111,7 +144,16 @@ public class ClientCrudController {
     @ApiResponse(responseCode = "200", description = "Client actualizat.")
     @ApiResponse(responseCode = "404", description = "Clientul nu exista.")
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateClient(@PathVariable String id, @RequestBody @Valid ClientDTO dto) {
+    public ResponseEntity<Map<String, Object>> updateClient(
+            @PathVariable String id,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader,
+            @RequestBody @Valid ClientDTO dto) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.ADMIN
+        );
+
         ClientDocument updated = clientService.updateById(id, ClientMapper.toDocument(dto));
         ClientDTO result = ClientMapper.toDTO(updated);
 
@@ -121,10 +163,16 @@ public class ClientCrudController {
     @Operation(summary = "Sterge un client")
     @ApiResponse(responseCode = "204", description = "Clientul a fost sters.")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable String id) {
+    public ResponseEntity<Void> deleteClient(
+            @PathVariable String id,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.ADMIN
+        );
+
         clientService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

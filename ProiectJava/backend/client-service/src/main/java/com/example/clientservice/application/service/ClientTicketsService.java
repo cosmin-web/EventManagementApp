@@ -20,8 +20,13 @@ public class ClientTicketsService {
         this.eventApiClient = eventApiClient;
     }
 
-    public Optional<TicketData> validateTicket(String email, String cod, boolean saveIfValid) {
-        TicketData data = eventApiClient.validateAndFetchTicket(cod);
+    public Optional<TicketData> validateTicket(
+            String email,
+            String cod,
+            boolean saveIfValid,
+            String authorizationHeader) {
+
+        TicketData data = eventApiClient.validateAndFetchTicket(cod, authorizationHeader);
 
         if (data == null) {
             throw new RuntimeException("Biletul nu a fost gasit.");
@@ -56,14 +61,17 @@ public class ClientTicketsService {
         return Optional.of(data);
     }
 
-    public List<TicketData> listDetailedTickets(String email) {
+    public List<TicketData> listDetailedTickets(
+            String email,
+            String authorizationHeader) {
+
         ClientDocument client = repo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Clientul nu a fost gasit."));
 
         List<TicketData> result = new ArrayList<>();
 
         for (TicketRef ref : client.getBilete()) {
-            TicketData data = eventApiClient.validateAndFetchTicket(ref.getCod());
+            TicketData data = eventApiClient.validateAndFetchTicket(ref.getCod(), authorizationHeader);
             if (data != null) {
                 result.add(data);
             }

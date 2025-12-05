@@ -2,7 +2,7 @@ package com.example.eventservice.infrastructure.adapter.in.rest;
 
 import com.example.eventservice.application.auth.AuthenticatedUser;
 import com.example.eventservice.application.dto.PackageEventDTO;
-import com.example.eventservice.application.service.auth.AuthorizationService;
+import com.example.eventservice.application.auth.AuthorizationService;
 import com.example.eventservice.domain.model.EventEntity;
 import com.example.eventservice.domain.model.PackageEntity;
 import com.example.eventservice.domain.model.PackageEvent;

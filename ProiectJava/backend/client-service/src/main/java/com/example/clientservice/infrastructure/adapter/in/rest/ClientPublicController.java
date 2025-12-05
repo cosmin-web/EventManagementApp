@@ -1,11 +1,15 @@
 package com.example.clientservice.infrastructure.adapter.in.rest;
 
+import com.example.clientservice.application.auth.AuthenticatedUser;
+import com.example.clientservice.application.auth.AuthorizationService;
+import com.example.clientservice.domain.model.UserRole;
 import com.example.clientservice.application.mapper.ClientMapper;
 import com.example.clientservice.domain.model.ClientDocument;
 import com.example.clientservice.application.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +22,11 @@ import java.util.Map;
 @Tag(name = "Public Clients", description = "Acces public la informatii despre clienti care au bilete")
 public class ClientPublicController {
 
-    private final ClientService clientService;
+    @Autowired
+    private ClientService clientService;
 
-    public ClientPublicController(ClientService clientService) {
-        this.clientService = clientService;
-    }
+    @Autowired
+    private AuthorizationService authorizationService;
 
     private Map<String, Object> wrap(Object data, Map<String, String> links) {
         Map<String, Object> resp = new LinkedHashMap<>();
@@ -43,8 +47,15 @@ public class ClientPublicController {
     @GetMapping("/by-event/{eventId}")
     public ResponseEntity<Map<String, Object>> getClientsByEvent(
             @PathVariable Integer eventId,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.ADMIN,
+                UserRole.OWNER_EVENT
+        );
 
         List<ClientDocument> all = clientService.findClientsByEventId(eventId)
                 .stream()
@@ -76,8 +87,15 @@ public class ClientPublicController {
     @GetMapping("/by-package/{packageId}")
     public ResponseEntity<Map<String, Object>> getClientsByPackage(
             @PathVariable Integer packageId,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.ADMIN,
+                UserRole.OWNER_EVENT
+        );
 
         List<ClientDocument> all = clientService.findClientsByPackageId(packageId)
                 .stream()

@@ -1,6 +1,5 @@
-package com.example.eventservice.application.service.auth;
+package com.example.eventservice.application.auth;
 
-import com.example.eventservice.application.auth.AuthenticatedUser;
 import com.example.eventservice.domain.model.UserEntity;
 import com.example.eventservice.infrastructure.adapter.out.idm.IdmAuthClient;
 import com.example.idm.grpc.ValidateTokenResponse;
@@ -20,6 +19,7 @@ public class AuthorizationService {
     }
 
     public AuthenticatedUser requireUser(String authorizationHeader, UserEntity.Role... allowedRoles) {
+
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
@@ -29,13 +29,14 @@ public class AuthorizationService {
 
         String token = authorizationHeader.substring("Bearer ".length());
 
+        if (token.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Empty token");
+        }
+
         ValidateTokenResponse resp = idmAuthClient.validate(token);
 
         if (!resp.getValid()) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    resp.getMessage()
-            );
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, resp.getMessage());
         }
 
         UserEntity.Role role = UserEntity.Role.fromString(resp.getRole());

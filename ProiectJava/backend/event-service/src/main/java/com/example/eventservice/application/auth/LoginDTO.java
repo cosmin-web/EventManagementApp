@@ -1,4 +1,4 @@
-package com.example.eventservice.application.dto.login;
+package com.example.eventservice.application.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,10 +1,14 @@
 package com.example.clientservice.infrastructure.adapter.in.rest;
 
+import com.example.clientservice.application.auth.AuthenticatedUser;
+import com.example.clientservice.application.auth.AuthorizationService;
+import com.example.clientservice.domain.model.UserRole;
 import com.example.clientservice.infrastructure.adapter.out.event.dto.TicketData;
 import com.example.clientservice.application.service.ClientTicketsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,11 +21,11 @@ import java.util.Map;
 @Tag(name = "Client Tickets", description = "Operatii pentru validarea si listarea biletelor")
 public class ClientTicketsController {
 
-    private final ClientTicketsService ticketsService;
+    @Autowired
+    private ClientTicketsService ticketsService;
 
-    public ClientTicketsController(ClientTicketsService ticketsService) {
-        this.ticketsService = ticketsService;
-    }
+    @Autowired
+    private AuthorizationService authorizationService;
 
     private Map<String, Object> wrap(Object data, Map<String, String> links) {
         Map<String, Object> resp = new LinkedHashMap<>();
@@ -44,9 +48,16 @@ public class ClientTicketsController {
     public ResponseEntity<Map<String, Object>> validateTicket(
             @PathVariable String email,
             @RequestParam String cod,
-            @RequestParam(defaultValue = "false") boolean save) {
+            @RequestParam(defaultValue = "false") boolean save,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
 
-        return ticketsService.validateTicket(email, cod, save)
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.CLIENT,
+                UserRole.ADMIN
+        );
+
+        return ticketsService.validateTicket(email, cod, save, authorizationHeader)
                 .map(data -> ResponseEntity.ok(wrap(data, ticketLinks(email))))
                 .orElse(ResponseEntity.badRequest().build());
     }
@@ -57,9 +68,16 @@ public class ClientTicketsController {
     public ResponseEntity<Map<String, Object>> getClientTickets(
             @PathVariable String email,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
+            @RequestParam(defaultValue = "5", name = "items_per_page") int size,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
 
-        List<TicketData> all = ticketsService.listDetailedTickets(email);
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.CLIENT,
+                UserRole.ADMIN
+        );
+
+        List<TicketData> all = ticketsService.listDetailedTickets(email, authorizationHeader);
 
         int start = page * size;
         int end = Math.min(start + size, all.size());

@@ -5,7 +5,7 @@ import com.example.eventservice.application.dto.PackageDTO;
 import com.example.eventservice.application.mapper.PackageMapper;
 import com.example.eventservice.application.service.PackageService;
 import com.example.eventservice.application.service.UserService;
-import com.example.eventservice.application.service.auth.AuthorizationService;
+import com.example.eventservice.application.auth.AuthorizationService;
 import com.example.eventservice.domain.model.PackageEntity;
 import com.example.eventservice.domain.model.UserEntity;
 import com.example.eventservice.infrastructure.adapter.out.client.ClientApiClient;

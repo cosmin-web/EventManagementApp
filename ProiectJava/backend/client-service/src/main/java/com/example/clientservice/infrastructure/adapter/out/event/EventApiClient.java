@@ -14,9 +14,10 @@ public class EventApiClient {
         this.eventWebClient = eventWebClient;
     }
 
-    public TicketData validateAndFetchTicket(String cod) {
+    public TicketData validateAndFetchTicket(String cod, String authorizationHeader) {
         return eventWebClient.get()
                 .uri(uri -> uri.path("/tickets/{cod}").build(cod))
+                .header("Authorization", authorizationHeader)
                 .retrieve()
                 .onStatus(status -> status.is4xxClientError(),
                         response -> Mono.error(new RuntimeException("Biletul nu a fost gasit: " + cod)))

@@ -3,7 +3,7 @@ package com.example.eventservice.infrastructure.adapter.in.rest;
 import com.example.eventservice.application.auth.AuthenticatedUser;
 import com.example.eventservice.application.dto.UserDTO;
 import com.example.eventservice.application.mapper.UserMapper;
-import com.example.eventservice.application.service.auth.AuthorizationService;
+import com.example.eventservice.application.auth.AuthorizationService;
 import com.example.eventservice.domain.model.UserEntity;
 import com.example.eventservice.application.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;

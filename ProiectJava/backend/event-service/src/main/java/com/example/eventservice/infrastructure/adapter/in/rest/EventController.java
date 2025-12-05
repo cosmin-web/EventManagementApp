@@ -1,7 +1,7 @@
 package com.example.eventservice.infrastructure.adapter.in.rest;
 
 import com.example.eventservice.application.auth.AuthenticatedUser;
-import com.example.eventservice.application.service.auth.AuthorizationService;
+import com.example.eventservice.application.auth.AuthorizationService;
 import com.example.eventservice.infrastructure.adapter.out.client.dto.PublicClientDTO;
 
 import com.example.eventservice.application.dto.EventDTO;
