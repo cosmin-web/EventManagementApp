@@ -3,8 +3,10 @@ FROM maven:3.9.9-eclipse-temurin-21 AS builder
 WORKDIR /build
 
 COPY ../pom.xml /build/pom.xml
+COPY ../idm-proto /build/idm-proto
 COPY ../client-service /build/client-service
 COPY ../event-service /build/event-service
+COPY ../idm-service /build/idm-service
 
 RUN mvn -q -pl client-service -am clean package -DskipTests
 

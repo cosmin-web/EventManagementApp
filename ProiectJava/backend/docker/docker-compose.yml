@@ -22,11 +22,6 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_DATABASE: clientsdb
-    healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 })" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   event-service:
     build:
@@ -40,8 +35,11 @@ services:
       SPRING_DATASOURCE_URL: "jdbc:mariadb://mariadb:3306/${MARIADB_DATABASE}"
       SPRING_DATASOURCE_USERNAME: "${MARIADB_USER}"
       SPRING_DATASOURCE_PASSWORD: "${MARIADB_PASSWORD}"
+      IDM_HOST: "idm-service"
+      IDM_PORT: "9090"
     depends_on:
       - mariadb
+      - idm-service
 
   client-service:
     build:
@@ -54,9 +52,23 @@ services:
     environment:
       SPRING_DATA_MONGODB_URI: "mongodb://mongodb:27017/clientsdb"
       CLIENT_EVENT_SERVICE_BASE_URL: "http://event-service:8080/api/event-manager"
+      IDM_HOST: "idm-service"
+      IDM_PORT: "9090"
     depends_on:
       - mongodb
       - event-service
+      - idm-service
+
+  idm-service:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.idm-service
+    container_name: idm-service
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    depends_on:
+      - mariadb
 
 volumes:
   mariadb_data:

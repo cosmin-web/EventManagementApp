@@ -12,7 +12,7 @@ public class IdmGrpcConfig {
 
     @Bean(destroyMethod = "shutdownNow")
     public ManagedChannel idmChannel(
-            @Value("${idm.host:localhost}") String host,
+            @Value("${idm.host:idm-service}") String host,
             @Value("${idm.port:9090}") int port
     ) {
         return ManagedChannelBuilder

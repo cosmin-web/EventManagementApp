@@ -1,10 +1,12 @@
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/mapper/PackageMapper.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/domain/model/UserEntity.java
+/home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/adapter/in/rest/auth/AuthController.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/adapter/out/client/dto/PublicClientDTO.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/adapter/in/rest/UserController.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/domain/repository/PackageEventRepository.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/dto/TicketDTO.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/mapper/TicketMapper.java
+/home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/auth/AuthenticatedUser.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/domain/model/PackageEntity.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/service/UserService.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/service/EventService.java
@@ -13,6 +15,8 @@
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/domain/model/PackageEvent.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/domain/repository/TicketRepository.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/mapper/PackageEventMapper.java
+/home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/auth/AuthorizationService.java
+/home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/adapter/out/idm/IdmAuthClient.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/adapter/in/rest/PackageEventController.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/adapter/in/rest/EventController.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/config/OpenAPIConfig.java
@@ -33,9 +37,11 @@
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/adapter/out/client/ClientApiClient.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/exception/EventGlobalExceptionHandler.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/mapper/EventMapper.java
+/home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/auth/LoginDTO.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/mapper/UserMapper.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/service/PackageService.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/config/WebClientConfig.java
+/home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/config/IdmGrpcConfig.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/domain/repository/UserRepository.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/domain/repository/EventRepository.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/config/DataInitializer.java

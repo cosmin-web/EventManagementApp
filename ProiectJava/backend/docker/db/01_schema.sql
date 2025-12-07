@@ -1,13 +1,4 @@
 SET NAMES utf8mb4;
-
-SET FOREIGN_KEY_CHECKS = 0;
-
-DROP TABLE IF EXISTS pachete_evenimente;
-DROP TABLE IF EXISTS bilete;
-DROP TABLE IF EXISTS evenimente;
-DROP TABLE IF EXISTS pachete;
-DROP TABLE IF EXISTS utilizatori;
-
 CREATE DATABASE IF NOT EXISTS eventdb CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE eventdb;
 
@@ -60,4 +51,4 @@ CREATE TABLE bilete (
     FOREIGN KEY (eveniment_id) REFERENCES evenimente(id)
 );
 
-SET FOREIGN_KEY_CHECKS = 1;
+
