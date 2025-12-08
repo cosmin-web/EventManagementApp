@@ -1,6 +1,5 @@
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/mapper/PackageMapper.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/domain/model/UserEntity.java
-/home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/adapter/in/rest/auth/AuthController.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/adapter/in/rest/UserController.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/domain/repository/PackageEventRepository.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/dto/TicketDTO.java
@@ -32,7 +31,6 @@
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/domain/model/TicketEntity.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/exception/EventGlobalExceptionHandler.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/mapper/EventMapper.java
-/home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/auth/LoginDTO.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/mapper/UserMapper.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/application/service/PackageService.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/event-service/src/main/java/com/example/eventservice/infrastructure/config/IdmGrpcConfig.java

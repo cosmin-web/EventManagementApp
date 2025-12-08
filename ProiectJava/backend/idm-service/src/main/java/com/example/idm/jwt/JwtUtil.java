@@ -16,7 +16,7 @@ public class JwtUtil {
     private static final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET);
     private static final String ISSUER = "idm-service";
 
-    private static final long EXPIRATION_MINUTES = 360;
+    private static final long EXPIRATION_MINUTES = 60;
 
     private final JWTVerifier verifier;
 

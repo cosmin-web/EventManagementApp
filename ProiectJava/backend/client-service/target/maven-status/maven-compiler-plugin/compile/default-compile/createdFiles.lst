@@ -17,12 +17,10 @@ com/example/clientservice/infrastructure/adapter/in/rest/ClientPublicController.
 com/example/clientservice/infrastructure/adapter/out/event/dto/EventShort.class
 com/example/clientservice/domain/model/ClientDocument.class
 com/example/clientservice/ClientServiceApplication.class
-com/example/clientservice/infrastructure/adapter/in/rest/auth/AuthController.class
 com/example/clientservice/application/dto/TicketDTO.class
 com/example/clientservice/infrastructure/adapter/in/rest/ClientTicketsController.class
 com/example/clientservice/application/service/ClientService.class
 com/example/clientservice/application/auth/AuthorizationService.class
-com/example/clientservice/application/auth/LoginDTO.class
 com/example/clientservice/infrastructure/adapter/out/event/dto/WrappedTicketResponse.class
 com/example/clientservice/domain/repository/ClientRepository.class
 com/example/clientservice/application/auth/AuthenticatedUser.class

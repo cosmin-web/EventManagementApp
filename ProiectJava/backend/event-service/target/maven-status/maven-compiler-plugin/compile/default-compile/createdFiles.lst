@@ -1,4 +1,3 @@
-com/example/eventservice/infrastructure/adapter/in/rest/auth/AuthController.class
 com/example/eventservice/domain/model/PackageEntity.class
 com/example/eventservice/infrastructure/adapter/in/rest/EventController.class
 com/example/eventservice/application/dto/PackageEventDTO.class
@@ -33,7 +32,6 @@ com/example/eventservice/infrastructure/adapter/in/rest/PackageEventController.c
 com/example/eventservice/domain/repository/PackageEventRepository.class
 com/example/eventservice/domain/repository/UserRepository.class
 com/example/eventservice/application/mapper/PackageMapper.class
-com/example/eventservice/application/auth/LoginDTO.class
 com/example/eventservice/infrastructure/adapter/in/rest/TicketController.class
 com/example/eventservice/domain/model/PackageEvent.class
 com/example/eventservice/domain/model/TicketEntity.class

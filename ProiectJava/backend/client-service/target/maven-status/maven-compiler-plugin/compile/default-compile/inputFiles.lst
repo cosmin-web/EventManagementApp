@@ -19,11 +19,9 @@
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/client-service/src/main/java/com/example/clientservice/domain/model/ClientDocument.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/client-service/src/main/java/com/example/clientservice/infrastructure/config/ClientDataInitializer.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/client-service/src/main/java/com/example/clientservice/application/dto/PublicClientDTO.java
-/home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/client-service/src/main/java/com/example/clientservice/infrastructure/adapter/in/rest/auth/AuthController.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/client-service/src/main/java/com/example/clientservice/application/service/ClientService.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/client-service/src/main/java/com/example/clientservice/infrastructure/adapter/in/rest/ClientCrudController.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/client-service/src/main/java/com/example/clientservice/infrastructure/adapter/out/idm/IdmAuthClient.java
-/home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/client-service/src/main/java/com/example/clientservice/application/auth/LoginDTO.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/client-service/src/main/java/com/example/clientservice/application/auth/AuthorizationService.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/client-service/src/main/java/com/example/clientservice/application/dto/TicketDTO.java
 /home/cosmin/Documents/Fac/Facultate/anul_4/POS/ProiectJava/backend/client-service/src/main/java/com/example/clientservice/infrastructure/adapter/out/event/dto/TicketData.java
