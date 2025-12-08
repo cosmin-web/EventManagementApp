@@ -2,10 +2,8 @@ package com.example.eventservice.infrastructure.adapter.in.rest;
 
 import com.example.eventservice.application.auth.AuthenticatedUser;
 import com.example.eventservice.application.auth.AuthorizationService;
-import com.example.eventservice.infrastructure.adapter.out.client.dto.PublicClientDTO;
 
 import com.example.eventservice.application.dto.EventDTO;
-import com.example.eventservice.infrastructure.adapter.out.client.ClientApiClient;
 import com.example.eventservice.application.mapper.EventMapper;
 import com.example.eventservice.domain.model.EventEntity;
 import com.example.eventservice.domain.model.UserEntity;
@@ -37,9 +35,6 @@ public class EventController {
     private UserService userService;
 
     @Autowired
-    private ClientApiClient clientApiClient;
-
-    @Autowired
     private AuthorizationService authorizationService;
 
     private Map<String, Object> wrap(Object data, Map<String, String> links) {
@@ -51,8 +46,8 @@ public class EventController {
 
     private Map<String, String> eventLinks(Integer id) {
         return Map.of(
-          "self", "/api/event-manager/events/" + id,
-          "parent", "/api/event-manager/events"
+                "self", "/api/event-manager/events/" + id,
+                "parent", "/api/event-manager/events"
         );
     }
 
@@ -219,29 +214,5 @@ public class EventController {
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
     }
-
-
-    @GetMapping("/{eventId}/clients")
-    public ResponseEntity<List<PublicClientDTO>> getClientsForEvent(
-            @PathVariable Integer eventId,
-            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
-
-        AuthenticatedUser current = authorizationService.requireUser(
-                authorizationHeader,
-                UserEntity.Role.OWNER_EVENT
-        );
-
-        Integer ownerIdFromToken = current.getUserId();
-
-        var event = eventService.getEventById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("Evenimentul nu exista."));
-
-        if (!event.getOwner().getId().equals(ownerIdFromToken)) {
-            return ResponseEntity.status(403).build();
-        }
-
-        List<PublicClientDTO> clients = clientApiClient.getClientsByEvent(eventId);
-        return ResponseEntity.ok(clients);
-    }
-
 }
+

@@ -8,8 +8,6 @@ import com.example.eventservice.application.service.UserService;
 import com.example.eventservice.application.auth.AuthorizationService;
 import com.example.eventservice.domain.model.PackageEntity;
 import com.example.eventservice.domain.model.UserEntity;
-import com.example.eventservice.infrastructure.adapter.out.client.ClientApiClient;
-import com.example.eventservice.infrastructure.adapter.out.client.dto.PublicClientDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,9 +31,6 @@ public class PackageController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private ClientApiClient clientApiClient;
 
     @Autowired
     private AuthorizationService authorizationService;
@@ -213,28 +208,5 @@ public class PackageController {
 
         packageService.deletePackage(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{packageId}/clients")
-    public ResponseEntity<List<PublicClientDTO>> getClientsForPackage(
-            @PathVariable Integer packageId,
-            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
-
-        AuthenticatedUser current = authorizationService.requireUser(
-                authorizationHeader,
-                UserEntity.Role.OWNER_EVENT
-        );
-
-        Integer ownerIdFromToken = current.getUserId();
-
-        var pkg = packageService.getPackageById(packageId)
-                .orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista."));
-
-        if (!pkg.getOwner().getId().equals(ownerIdFromToken)) {
-            return ResponseEntity.status(403).build();
-        }
-
-        List<PublicClientDTO> clients = clientApiClient.getClientsByPackage(packageId);
-        return ResponseEntity.ok(clients);
     }
 }
