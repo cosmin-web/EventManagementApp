@@ -22,7 +22,7 @@ public class ClientDocument {
 
     public ClientDocument() {}
 
-    public ObjectId getId() { return id; }
+    public String getId() { return id != null ? id.toHexString() : null;}
     public void setId(ObjectId id) { this.id = id; }
     public String getIdAsString() {
         return id != null ? id.toHexString() : null;

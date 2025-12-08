@@ -91,8 +91,13 @@ public class ClientCrudController {
 
         AuthenticatedUser current = authorizationService.requireUser(
                 authorizationHeader,
-                UserRole.ADMIN
+                UserRole.ADMIN,
+                UserRole.CLIENT
         );
+
+        if (current.getRole() == UserRole.CLIENT && !current.getUserId().equals(id)) {
+            return ResponseEntity.status(403).build();
+        }
 
         return clientService.findById(id)
                 .map(ClientMapper::toDTO)
@@ -110,13 +115,25 @@ public class ClientCrudController {
 
         AuthenticatedUser current = authorizationService.requireUser(
                 authorizationHeader,
-                UserRole.ADMIN
+                UserRole.ADMIN,
+                UserRole.CLIENT
         );
 
-        return clientService.findByEmail(email)
-                .map(ClientMapper::toDTO)
-                .map(dto -> ResponseEntity.ok(wrap(dto, clientLinks(dto.getId()))))
-                .orElse(ResponseEntity.notFound().build());
+
+        var client = clientService.findByEmail(email).orElse(null);
+
+        if (current.getRole() == UserRole.CLIENT) {
+            if (client == null || !client.getId().equals(current.getUserId())) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
+        if (client == null)
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(
+                wrap(ClientMapper.toDTO(client), clientLinks(client.getId()))
+        );
     }
 
     @Operation(summary = "Creeaza sau actualizeaza un client dupa email")
@@ -151,8 +168,13 @@ public class ClientCrudController {
 
         AuthenticatedUser current = authorizationService.requireUser(
                 authorizationHeader,
-                UserRole.ADMIN
+                UserRole.ADMIN,
+                UserRole.CLIENT
         );
+
+        if (current.getRole() == UserRole.CLIENT && !current.getUserId().equals(id)) {
+            return ResponseEntity.status(403).build();
+        }
 
         ClientDocument updated = clientService.updateById(id, ClientMapper.toDocument(dto));
         ClientDTO result = ClientMapper.toDTO(updated);

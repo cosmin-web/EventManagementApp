@@ -2,6 +2,7 @@ package com.example.clientservice.infrastructure.adapter.in.rest;
 
 import com.example.clientservice.application.auth.AuthenticatedUser;
 import com.example.clientservice.application.auth.AuthorizationService;
+import com.example.clientservice.application.service.ClientService;
 import com.example.clientservice.domain.model.UserRole;
 import com.example.clientservice.infrastructure.adapter.out.event.dto.TicketData;
 import com.example.clientservice.application.service.ClientTicketsService;
@@ -26,6 +27,9 @@ public class ClientTicketsController {
 
     @Autowired
     private AuthorizationService authorizationService;
+
+    @Autowired
+    private ClientService clientService;
 
     private Map<String, Object> wrap(Object data, Map<String, String> links) {
         Map<String, Object> resp = new LinkedHashMap<>();
@@ -57,6 +61,14 @@ public class ClientTicketsController {
                 UserRole.ADMIN
         );
 
+        var client = clientService.findByEmail(email).orElse(null);
+
+        if (current.getRole() == UserRole.CLIENT) {
+            if (client == null || !client.getId().equals(current.getUserId())) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
         return ticketsService.validateTicket(email, cod, save, authorizationHeader)
                 .map(data -> ResponseEntity.ok(wrap(data, ticketLinks(email))))
                 .orElse(ResponseEntity.badRequest().build());
@@ -76,6 +88,14 @@ public class ClientTicketsController {
                 UserRole.CLIENT,
                 UserRole.ADMIN
         );
+
+        var client = clientService.findByEmail(email).orElse(null);
+
+        if (current.getRole() == UserRole.CLIENT) {
+            if (client == null || !client.getId().equals(current.getUserId())) {
+                return ResponseEntity.status(403).build();
+            }
+        }
 
         List<TicketData> all = ticketsService.listDetailedTickets(email, authorizationHeader);
 

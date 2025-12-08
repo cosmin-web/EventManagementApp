@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -32,6 +33,20 @@ public class ClientGlobalExceptionHandler {
         body.put("details", details);
 
         return ResponseEntity.status(status).body(body);
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Object> handleResponseStatus(ResponseStatusException ex, HttpServletRequest req) {
+
+        HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
+
+        return build(
+                status,
+                status.getReasonPhrase(),
+                ex.getReason(),
+                req.getRequestURI(),
+                null
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
