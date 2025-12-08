@@ -1,5 +1,6 @@
 package com.example.eventservice.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -8,7 +9,8 @@ public class PackageDTO {
 
     private Integer id;
 
-    @NotNull(message = "Proprietarul este obligatoriu")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    // @NotNull(message = "Proprietarul este obligatoriu") pt ca ownerid vine acum din token
     private Integer ownerId;
 
     @NotBlank(message = "Numele pachetului este obligatoriu")
@@ -24,7 +26,9 @@ public class PackageDTO {
     private Integer numarLocuri;
 
     //campuri noi
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String ownerEmail;
+
     private Integer numberOfEvents;
     private Integer availableTickets;
 

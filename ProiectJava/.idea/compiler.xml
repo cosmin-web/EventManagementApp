@@ -17,8 +17,8 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="backend" options="" />
-      <module name="client-service" options="" />
-      <module name="event-service" options="" />
+      <module name="client-service" options="-parameters" />
+      <module name="event-service" options="-parameters" />
       <module name="idm-proto" options="" />
       <module name="idm-service" options="" />
     </option>

@@ -1,5 +1,6 @@
 package com.example.eventservice.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -18,11 +19,15 @@ public class EventDTO {
     @Positive(message = "Numarul de locuri trebuie sa fie pozitiv.")
     private Integer numarLocuri;
 
-    @NotNull(message = "Id-ul proprietarului este obligatoriu.")
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    // @NotNull(message = "Id-ul proprietarului este obligatoriu.") ownerid vine din token acum
     private Integer ownerId;
 
     //campuri noi
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String ownerEmail;
+
     private Integer ticketsSold;
     private Integer availableTickets;
 

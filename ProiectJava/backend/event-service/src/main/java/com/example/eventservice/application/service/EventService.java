@@ -48,6 +48,18 @@ public class EventService {
     public EventEntity updateEvent(Integer id, EventEntity updatedEvent) {
         return eventRepository.findById(id)
                 .map(event -> {
+
+                    int bileteEveniment = ticketRepository.findByEveniment(event).size();
+                    int biletePachete = countPackageTicketsImpactForEvent(event);
+                    int totalVandute = bileteEveniment + biletePachete;
+
+                    if (totalVandute > 0 &&
+                            !event.getNumarLocuri().equals(updatedEvent.getNumarLocuri())) {
+                        throw new IllegalStateException(
+                                "Nu se poate modifica numarul de locuri dupa ce s-au vandut bilete."
+                        );
+                    }
+
                     event.setNume(updatedEvent.getNume());
                     event.setLocatie(updatedEvent.getLocatie());
                     event.setDescriere(updatedEvent.getDescriere());
