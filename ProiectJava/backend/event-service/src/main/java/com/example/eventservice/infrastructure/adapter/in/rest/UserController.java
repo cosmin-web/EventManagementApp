@@ -100,7 +100,7 @@ public class UserController {
                 UserEntity.Role.ADMIN
         );
 
-        UserEntity entity = UserMapper.toEntity(dto, "defaultPassword");
+        UserEntity entity = UserMapper.toEntity(dto);
         UserEntity saved = userService.createUser(entity);
         UserDTO response = UserMapper.fromEntity(saved);
 
@@ -123,7 +123,7 @@ public class UserController {
                 UserEntity.Role.ADMIN
         );
 
-        UserEntity updatedEntity = UserMapper.toEntity(dto, "defaultPassword");
+        UserEntity updatedEntity = UserMapper.toEntity(dto);
         UserEntity saved = userService.updateUser(id, updatedEntity);
         UserDTO response = UserMapper.fromEntity(saved);
 

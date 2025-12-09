@@ -211,13 +211,15 @@ public class TicketController {
 
         AuthenticatedUser current = authorizationService.requireUser(
                 authorizationHeader,
-                UserEntity.Role.CLIENT
+                UserEntity.Role.SERVICE_CLIENT
         );
 
         TicketEntity ticket = ticketService.createTicketForEvent(eventId);
 
+        Map<String, Object> data = enrichTicket(ticket);
+
         return ResponseEntity.created(URI.create("/api/event-manager/tickets/" + ticket.getCod()))
-                .body(wrap(ticket, ticketLinks(ticket.getCod())));
+                .body(wrap(data, ticketLinks(ticket.getCod())));
     }
 
     @Operation(summary = "Creeaza un bilet pentru un pachet")
@@ -231,13 +233,15 @@ public class TicketController {
 
         AuthenticatedUser current = authorizationService.requireUser(
                 authorizationHeader,
-                UserEntity.Role.CLIENT
+                UserEntity.Role.SERVICE_CLIENT
         );
 
         TicketEntity ticket = ticketService.createTicketForPackage(packetId);
 
+        Map<String, Object> data = enrichTicket(ticket);
+
         return ResponseEntity.created(URI.create("/api/event-manager/tickets/" + ticket.getCod()))
-                .body(wrap(ticket, ticketLinks(ticket.getCod())));
+                .body(wrap(data, ticketLinks(ticket.getCod())));
     }
 
 

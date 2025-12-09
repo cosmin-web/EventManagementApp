@@ -38,6 +38,13 @@ public class DataInitializer {
                     UserEntity.Role.CLIENT
             ));
 
+            userRepository.save(new UserEntity(
+                    null,
+                    "clients_service",
+                    "some_secret",
+                    UserEntity.Role.SERVICE_CLIENT
+            ));
+
             System.out.println("Utilizatorii default au fost creati cu succes!");
         } else {
             System.out.println("Utilizatorii exista deja în baza de date. Nu se adauga altii.");

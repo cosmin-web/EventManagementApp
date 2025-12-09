@@ -15,13 +15,16 @@ public class UserMapper {
         );
     }
 
-    public static UserEntity toEntity(UserDTO dto, String parola) {
+    public static UserEntity toEntity(UserDTO dto) {
         if (dto == null) return null;
 
         UserEntity entity = new UserEntity();
         entity.setId(dto.getId());
         entity.setEmail(dto.getEmail());
-        entity.setParola(parola != null ? parola : "defaultPassword");
+
+        String password = dto.getParola();
+
+        entity.setParola(password != null ? password : "defaultPassword");
         entity.setRol(UserEntity.Role.fromString(dto.getRol()));
         return entity;
     }

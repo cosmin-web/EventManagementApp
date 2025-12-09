@@ -2,6 +2,7 @@ package com.example.clientservice.infrastructure.adapter.in.rest;
 
 import com.example.clientservice.application.auth.AuthenticatedUser;
 import com.example.clientservice.application.auth.AuthorizationService;
+import com.example.clientservice.application.auth.ServiceTokenProvider;
 import com.example.clientservice.application.service.ClientService;
 import com.example.clientservice.domain.model.UserRole;
 import com.example.clientservice.infrastructure.adapter.out.event.dto.TicketData;
@@ -27,6 +28,9 @@ public class ClientTicketsController {
 
     @Autowired
     private AuthorizationService authorizationService;
+
+    @Autowired
+    private ServiceTokenProvider serviceTokenProvider;
 
     @Autowired
     private ClientService clientService;
@@ -116,5 +120,67 @@ public class ClientTicketsController {
         resp.put("totalPages", (int) Math.ceil(all.size() / (double) size));
 
         return ResponseEntity.ok(resp);
+    }
+
+    @Operation(summary = "Clientul cumpara un bilet pentru un eveniment")
+    @ApiResponse(responseCode = "201", description = "Bilet creat si atasat clientului.")
+    @PostMapping("/{email}/tickets/events/{eventId}")
+    public ResponseEntity<Map<String, Object>> buyEventTicket(
+            @PathVariable String email,
+            @PathVariable Integer eventId,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.CLIENT,
+                UserRole.ADMIN
+        );
+
+        var client = clientService.findByEmail(email).orElse(null);
+
+        if(current.getRole() == UserRole.CLIENT) {
+            if(client == null || !email.equalsIgnoreCase(client.getEmail())) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
+        String serviceToken = serviceTokenProvider.getServiceToken();
+
+        TicketData data = ticketsService.buyTicketForEvent(email, eventId, serviceToken);
+
+        return ResponseEntity
+                .created(null)
+                .body(wrap(data, ticketLinks(email)));
+    }
+
+    @Operation(summary = "Clientul cumpara un bilet pentru un pachet")
+    @ApiResponse(responseCode = "201", description = "Bilet creat si atasat clientului.")
+    @PostMapping("/{email}/tickets/packages/{packageId}")
+    public ResponseEntity<Map<String, Object>> buyPackageTicket(
+            @PathVariable String email,
+            @PathVariable Integer packageId,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.CLIENT,
+                UserRole.ADMIN
+        );
+
+        var client = clientService.findByEmail(email).orElse(null);
+
+        if(current.getRole() == UserRole.CLIENT) {
+            if(client == null || !email.equalsIgnoreCase(client.getEmail())) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
+        String serviceToken = serviceTokenProvider.getServiceToken();
+
+        TicketData data = ticketsService.buyTicketForPackage(email, packageId, serviceToken);
+
+        return ResponseEntity
+                .created(null)
+                .body(wrap(data, ticketLinks(email)));
     }
 }

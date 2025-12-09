@@ -5,6 +5,7 @@ import com.example.clientservice.infrastructure.adapter.out.event.dto.TicketData
 import com.example.clientservice.domain.model.ClientDocument;
 import com.example.clientservice.domain.model.TicketRef;
 import com.example.clientservice.domain.repository.ClientRepository;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -78,5 +79,59 @@ public class ClientTicketsService {
         }
 
         return result;
+    }
+
+    public TicketData buyTicketForEvent(String email, Integer eventId, String serviceToken) {
+
+        TicketData data = eventApiClient.createTicketForEvent(eventId, serviceToken);
+
+        if(data == null) {
+            throw new RuntimeException("Nu s-a putut crea biletul pentru eveniment.");
+        }
+
+        TicketRef ref = new TicketRef();
+        ref.setCod(data.getCod());
+        ref.setTip("event");
+        ref.setEventId(eventId);
+
+        ClientDocument client = repo.findByEmail(email).orElse(null);
+
+        if(client == null) {
+            client = new ClientDocument();
+            client.setEmail(email);
+            client.setBilete(new ArrayList<>());
+        }
+
+        client.getBilete().add(ref);
+        repo.save(client);
+
+        return data;
+    }
+
+    public TicketData buyTicketForPackage(String email, Integer packageId, String serviceToken) {
+
+        TicketData data = eventApiClient.createTicketForPackage(packageId, serviceToken);
+
+        if(data == null) {
+            throw new RuntimeException("Nu s-a putut crea biletul pentru pachet.");
+        }
+
+        TicketRef ref = new TicketRef();
+        ref.setCod(data.getCod());
+        ref.setTip("package");
+        ref.setPackageId(packageId);
+
+        ClientDocument client = repo.findByEmail(email).orElse(null);
+
+        if(client == null) {
+            client = new ClientDocument();
+            client.setEmail(email);
+            client.setBilete(new ArrayList<>());
+        }
+
+        client.getBilete().add(ref);
+        repo.save(client);
+
+        return data;
     }
 }

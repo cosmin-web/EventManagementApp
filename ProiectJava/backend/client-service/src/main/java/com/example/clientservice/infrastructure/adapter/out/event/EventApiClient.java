@@ -31,5 +31,31 @@ public class EventApiClient {
                 .block();
     }
 
+    public TicketData createTicketForEvent(Integer eventId, String serviceToken) {
+        return eventWebClient.put()
+                .uri(uri -> uri.path("/events/{eventId}/tickets").build(eventId))
+                .header("Authorization", "Bearer " + serviceToken)
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError(),
+                        response -> Mono.error(new RuntimeException("Nu pot crea bilet pentru eveniment " + eventId)))
+                .onStatus(status -> status.is5xxServerError(),
+                        response -> Mono.error(new RuntimeException("Server eroare la event-service")))
+                .bodyToMono(WrappedTicketResponse.class)
+                .map(WrappedTicketResponse::getData)
+                .block();
+    }
 
+    public TicketData createTicketForPackage(Integer packageId, String serviceToken) {
+        return eventWebClient.put()
+                .uri(uri -> uri.path("/event-packets/{packageId}/tickets").build(packageId))
+                .header("Authorization", "Bearer " + serviceToken)
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError(),
+                        response -> Mono.error(new RuntimeException("Nu pot crea bilet pentru pachet " + packageId)))
+                .onStatus(status -> status.is5xxServerError(),
+                        response -> Mono.error(new RuntimeException("Server eroare la event-service")))
+                .bodyToMono(WrappedTicketResponse.class)
+                .map(WrappedTicketResponse::getData)
+                .block();
+    }
 }

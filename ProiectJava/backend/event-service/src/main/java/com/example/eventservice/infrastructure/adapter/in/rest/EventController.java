@@ -189,7 +189,7 @@ public class EventController {
     }
 
 
-    @Operation(summary = "Sterge un eveniment după ID")
+    @Operation(summary = "Sterge un eveniment dupa ID")
     @ApiResponse(responseCode = "204", description = "Evenimentul a fost sters.")
     @ApiResponse(responseCode = "404", description = "Evenimentul nu a fost gasit.")
     @DeleteMapping("/{id}")

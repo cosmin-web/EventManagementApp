@@ -25,4 +25,5 @@ com/example/clientservice/infrastructure/adapter/out/event/dto/WrappedTicketResp
 com/example/clientservice/domain/repository/ClientRepository.class
 com/example/clientservice/application/auth/AuthenticatedUser.class
 com/example/clientservice/application/service/ClientTicketsService.class
+com/example/clientservice/application/auth/ServiceTokenProvider.class
 com/example/clientservice/infrastructure/config/ClientDataInitializer.class

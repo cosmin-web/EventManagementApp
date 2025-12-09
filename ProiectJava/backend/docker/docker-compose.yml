@@ -22,6 +22,8 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_DATABASE: clientsdb
+    volumes:
+      - mongo_data:/data/db
 
   event-service:
     build:
@@ -72,3 +74,4 @@ services:
 
 volumes:
   mariadb_data:
+  mongo_data:

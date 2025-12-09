@@ -3,7 +3,8 @@ package com.example.clientservice.domain.model;
 public enum UserRole {
     ADMIN,
     OWNER_EVENT,
-    CLIENT;
+    CLIENT,
+    SERVICE_CLIENT;
 
     public static UserRole fromString(String value) {
         if (value == null) return null;

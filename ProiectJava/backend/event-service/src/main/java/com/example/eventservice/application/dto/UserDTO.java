@@ -1,5 +1,6 @@
 package com.example.eventservice.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -12,6 +13,10 @@ public class UserDTO {
 
     @NotBlank(message = "Rolul este obligatoriu")
     private String rol;
+
+    @NotBlank(message = "Parola este obligatorie")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String parola;
 
     public UserDTO() {}
 
@@ -29,4 +34,7 @@ public class UserDTO {
 
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
+
+    public String getParola() { return parola; }
+    public void setParola(String parola) { this.parola = parola; }
 }
