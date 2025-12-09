@@ -1,7 +1,7 @@
 package com.example.eventservice.application.service;
 
 import com.example.eventservice.domain.model.EventEntity;
-import com.example.eventservice.domain.model.PackageEvent;
+import com.example.eventservice.domain.model.PackageEventEntity;
 import com.example.eventservice.domain.repository.EventRepository;
 import com.example.eventservice.domain.repository.PackageEventRepository;
 import com.example.eventservice.domain.repository.TicketRepository;
@@ -76,7 +76,7 @@ public class EventService {
         eventRepository.delete(event);
     }
 
-    public List<PackageEvent> getPackagesForEvent(EventEntity event) {
+    public List<PackageEventEntity> getPackagesForEvent(EventEntity event) {
         return packageEventRepository.findByEveniment(event);
     }
 

@@ -1,7 +1,7 @@
 package com.example.eventservice.application.service;
 
 import com.example.eventservice.domain.model.PackageEntity;
-import com.example.eventservice.domain.model.PackageEvent;
+import com.example.eventservice.domain.model.PackageEventEntity;
 import com.example.eventservice.domain.repository.PackageEventRepository;
 import com.example.eventservice.domain.repository.PackageRepository;
 
@@ -44,6 +44,13 @@ public class PackageService {
     public PackageEntity updatePackage(Integer id, PackageEntity updated) {
         return packageRepository.findById(id)
                 .map(p -> {
+
+                    int ticketsSold = ticketRepository.findByPachet(p).size();
+
+                    if (ticketsSold > 0 && p.getNumarLocuri() != null && !p.getNumarLocuri().equals(updated.getNumarLocuri())) {
+                        throw new IllegalStateException("Nu se poate modifica numarul de locuri pentru pachet dupa ce s-au vandut bilete.");
+                    }
+
                     p.setNume(updated.getNume());
                     p.setLocatie(updated.getLocatie());
                     p.setDescriere(updated.getDescriere());
@@ -60,7 +67,7 @@ public class PackageService {
         packageRepository.delete(pachet);
     }
 
-    public List<PackageEvent> getEventsForPackage(PackageEntity pachet) {
+    public List<PackageEventEntity> getEventsForPackage(PackageEntity pachet) {
         return packageEventRepository.findByPachet(pachet);
     }
 

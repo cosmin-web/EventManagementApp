@@ -35,6 +35,7 @@ message ValidateTokenResponse {
   string sub = 2;
   string role = 3;
   string message = 4;
+  string email = 5;
 }
 
 message LogoutResponse {

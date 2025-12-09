@@ -5,6 +5,7 @@ com/example/eventservice/application/service/UserService.class
 com/example/eventservice/domain/model/PackageEventIdEntity.class
 com/example/eventservice/application/service/TicketService.class
 com/example/eventservice/application/dto/EventDTO.class
+com/example/eventservice/domain/model/PackageEventEntity.class
 com/example/eventservice/application/mapper/PackageEventMapper.class
 com/example/eventservice/domain/model/UserEntity.class
 com/example/eventservice/infrastructure/config/DataInitializer.class
@@ -33,7 +34,6 @@ com/example/eventservice/domain/repository/PackageEventRepository.class
 com/example/eventservice/domain/repository/UserRepository.class
 com/example/eventservice/application/mapper/PackageMapper.class
 com/example/eventservice/infrastructure/adapter/in/rest/TicketController.class
-com/example/eventservice/domain/model/PackageEvent.class
 com/example/eventservice/domain/model/TicketEntity.class
 com/example/eventservice/domain/repository/PackageRepository.class
 com/example/eventservice/application/dto/TicketDTO.class

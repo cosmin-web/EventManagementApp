@@ -53,16 +53,16 @@ public final class IdmProto {
       "name\030\001 \001(\t\022\020\n\010password\030\002 \001(\t\"@\n\rLoginRes" +
       "ponse\022\017\n\007success\030\001 \001(\010\022\r\n\005token\030\002 \001(\t\022\017\n" +
       "\007message\030\003 \001(\t\"\035\n\014TokenRequest\022\r\n\005token\030" +
-      "\001 \001(\t\"R\n\025ValidateTokenResponse\022\r\n\005valid\030" +
+      "\001 \001(\t\"a\n\025ValidateTokenResponse\022\r\n\005valid\030" +
       "\001 \001(\010\022\013\n\003sub\030\002 \001(\t\022\014\n\004role\030\003 \001(\t\022\017\n\007mess" +
-      "age\030\004 \001(\t\"2\n\016LogoutResponse\022\017\n\007success\030\001" +
-      " \001(\010\022\017\n\007message\030\002 \001(\t2\256\001\n\nIdmService\022.\n\005" +
-      "Login\022\021.idm.LoginRequest\032\022.idm.LoginResp" +
-      "onse\022>\n\rValidateToken\022\021.idm.TokenRequest" +
-      "\032\032.idm.ValidateTokenResponse\0220\n\006Logout\022\021" +
-      ".idm.TokenRequest\032\023.idm.LogoutResponseB\"" +
-      "\n\024com.example.idm.grpcB\010IdmProtoP\001b\006prot" +
-      "o3"
+      "age\030\004 \001(\t\022\r\n\005email\030\005 \001(\t\"2\n\016LogoutRespon" +
+      "se\022\017\n\007success\030\001 \001(\010\022\017\n\007message\030\002 \001(\t2\256\001\n" +
+      "\nIdmService\022.\n\005Login\022\021.idm.LoginRequest\032" +
+      "\022.idm.LoginResponse\022>\n\rValidateToken\022\021.i" +
+      "dm.TokenRequest\032\032.idm.ValidateTokenRespo" +
+      "nse\0220\n\006Logout\022\021.idm.TokenRequest\032\023.idm.L" +
+      "ogoutResponseB\"\n\024com.example.idm.grpcB\010I" +
+      "dmProtoP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -91,7 +91,7 @@ public final class IdmProto {
     internal_static_idm_ValidateTokenResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_idm_ValidateTokenResponse_descriptor,
-        new java.lang.String[] { "Valid", "Sub", "Role", "Message", });
+        new java.lang.String[] { "Valid", "Sub", "Role", "Message", "Email", });
     internal_static_idm_LogoutResponse_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_idm_LogoutResponse_fieldAccessorTable = new

@@ -3,11 +3,11 @@ package com.example.eventservice.application.mapper;
 import com.example.eventservice.application.dto.PackageEventDTO;
 import com.example.eventservice.domain.model.EventEntity;
 import com.example.eventservice.domain.model.PackageEntity;
-import com.example.eventservice.domain.model.PackageEvent;
+import com.example.eventservice.domain.model.PackageEventEntity;
 
 public class PackageEventMapper {
 
-    public static PackageEventDTO fromEntity(PackageEvent entity) {
+    public static PackageEventDTO fromEntity(PackageEventEntity entity) {
         PackageEventDTO dto = new PackageEventDTO();
         dto.setEventId(entity.getEveniment().getId());
         dto.setPackageId(entity.getPachet().getId());
@@ -20,8 +20,8 @@ public class PackageEventMapper {
         return dto;
     }
 
-    public static PackageEvent toEntity(PackageEventDTO dto, PackageEntity pachet, EventEntity eveniment) {
-        PackageEvent pe = new PackageEvent();
+    public static PackageEventEntity toEntity(PackageEventDTO dto, PackageEntity pachet, EventEntity eveniment) {
+        PackageEventEntity pe = new PackageEventEntity();
         pe.setEveniment(eveniment);
         pe.setPachet(pachet);
         return pe;

@@ -64,7 +64,7 @@ public class ClientTicketsController {
         var client = clientService.findByEmail(email).orElse(null);
 
         if (current.getRole() == UserRole.CLIENT) {
-            if (client == null || !client.getId().equals(current.getUserId())) {
+            if (client == null || !email.equalsIgnoreCase(current.getEmail())) {
                 return ResponseEntity.status(403).build();
             }
         }
@@ -92,7 +92,7 @@ public class ClientTicketsController {
         var client = clientService.findByEmail(email).orElse(null);
 
         if (current.getRole() == UserRole.CLIENT) {
-            if (client == null || !client.getId().equals(current.getUserId())) {
+            if (client == null || !email.equalsIgnoreCase(current.getEmail())) {
                 return ResponseEntity.status(403).build();
             }
         }

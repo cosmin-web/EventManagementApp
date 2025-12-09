@@ -2,7 +2,7 @@ package com.example.eventservice.application.service;
 
 import com.example.eventservice.domain.model.EventEntity;
 import com.example.eventservice.domain.model.PackageEntity;
-import com.example.eventservice.domain.model.PackageEvent;
+import com.example.eventservice.domain.model.PackageEventEntity;
 import com.example.eventservice.domain.model.PackageEventIdEntity;
 import com.example.eventservice.domain.repository.PackageEventRepository;
 import jakarta.transaction.Transactional;
@@ -20,24 +20,24 @@ public class PackageEventService {
     @Autowired
     private PackageEventRepository packageEventRepository;
 
-    public List<PackageEvent> getAllRelations() {
+    public List<PackageEventEntity> getAllRelations() {
         return packageEventRepository.findAll();
     }
 
-    public Optional<PackageEvent> getRelation(PackageEntity pachet, EventEntity eveniment) {
+    public Optional<PackageEventEntity> getRelation(PackageEntity pachet, EventEntity eveniment) {
         return packageEventRepository.findById(new PackageEventIdEntity(pachet.getId(), eveniment.getId()));
     }
 
-    public List<PackageEvent> getPackagesForEvent(EventEntity eveniment) {
+    public List<PackageEventEntity> getPackagesForEvent(EventEntity eveniment) {
         return packageEventRepository.findByEveniment(eveniment);
     }
 
-    public List<PackageEvent> getEventsForPackage(PackageEntity pachet) {
+    public List<PackageEventEntity> getEventsForPackage(PackageEntity pachet) {
         return packageEventRepository.findByPachet(pachet);
     }
 
-    public PackageEvent addEventToPackage(PackageEntity pachet, EventEntity eveniment) {
-        PackageEvent relation = new PackageEvent(pachet, eveniment);
+    public PackageEventEntity addEventToPackage(PackageEntity pachet, EventEntity eveniment) {
+        PackageEventEntity relation = new PackageEventEntity(pachet, eveniment);
         return packageEventRepository.save(relation);
     }
 

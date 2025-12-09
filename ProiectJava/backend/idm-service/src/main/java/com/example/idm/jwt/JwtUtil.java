@@ -26,7 +26,7 @@ public class JwtUtil {
                 .build();
     }
 
-    public String generateToken(int userId, String role) {
+    public String generateToken(int userId, String role, String email) {
         Instant now = Instant.now();
         Instant exp = now.plus(EXPIRATION_MINUTES, ChronoUnit.MINUTES);
 
@@ -36,6 +36,7 @@ public class JwtUtil {
                 .withExpiresAt(Date.from(exp))
                 .withJWTId(UUID.randomUUID().toString())
                 .withClaim("role", role)
+                .withClaim("email", email)
                 .sign(ALGORITHM);
     }
 

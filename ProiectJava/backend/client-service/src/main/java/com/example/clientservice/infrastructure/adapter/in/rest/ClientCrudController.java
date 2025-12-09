@@ -95,14 +95,20 @@ public class ClientCrudController {
                 UserRole.CLIENT
         );
 
-        if (current.getRole() == UserRole.CLIENT && !current.getUserId().equals(id)) {
+        var opt = clientService.findById(id);
+        if(opt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var client = opt.get();
+
+        if(current.getRole() == UserRole.CLIENT && !client.getEmail().equalsIgnoreCase(current.getEmail())) {
             return ResponseEntity.status(403).build();
         }
 
-        return clientService.findById(id)
-                .map(ClientMapper::toDTO)
-                .map(dto -> ResponseEntity.ok(wrap(dto, clientLinks(dto.getId()))))
-                .orElse(ResponseEntity.notFound().build());
+        var dto = ClientMapper.toDTO(client);
+
+        return ResponseEntity.ok(wrap(dto, clientLinks(dto.getId())));
     }
 
     @Operation(summary = "Obtine un client dupa email")
@@ -123,7 +129,7 @@ public class ClientCrudController {
         var client = clientService.findByEmail(email).orElse(null);
 
         if (current.getRole() == UserRole.CLIENT) {
-            if (client == null || !client.getId().equals(current.getUserId())) {
+            if (client == null || !email.equalsIgnoreCase(current.getEmail())) {
                 return ResponseEntity.status(403).build();
             }
         }
@@ -131,9 +137,7 @@ public class ClientCrudController {
         if (client == null)
             return ResponseEntity.notFound().build();
 
-        return ResponseEntity.ok(
-                wrap(ClientMapper.toDTO(client), clientLinks(client.getId()))
-        );
+        return ResponseEntity.ok(wrap(ClientMapper.toDTO(client), clientLinks(client.getId())));
     }
 
     @Operation(summary = "Creeaza sau actualizeaza un client dupa email")
@@ -146,8 +150,13 @@ public class ClientCrudController {
 
         AuthenticatedUser current = authorizationService.requireUser(
                 authorizationHeader,
-                UserRole.ADMIN
+                UserRole.ADMIN,
+                UserRole.CLIENT
         );
+
+        if(current.getRole() == UserRole.CLIENT && !dto.getEmail().equalsIgnoreCase(current.getEmail())) {
+            return ResponseEntity.status(403).build();
+        }
 
         ClientDocument saved = clientService.updateByEmail(ClientMapper.toDocument(dto));
         ClientDTO savedDto = ClientMapper.toDTO(saved);
@@ -172,7 +181,14 @@ public class ClientCrudController {
                 UserRole.CLIENT
         );
 
-        if (current.getRole() == UserRole.CLIENT && !current.getUserId().equals(id)) {
+        var existingOpt = clientService.findById(id);
+        if(existingOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var existing = existingOpt.get();
+
+        if(current.getRole() == UserRole.CLIENT && !existing.getEmail().equalsIgnoreCase(current.getEmail())) {
             return ResponseEntity.status(403).build();
         }
 

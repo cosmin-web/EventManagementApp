@@ -5,7 +5,7 @@ import com.example.eventservice.application.dto.PackageEventDTO;
 import com.example.eventservice.application.auth.AuthorizationService;
 import com.example.eventservice.domain.model.EventEntity;
 import com.example.eventservice.domain.model.PackageEntity;
-import com.example.eventservice.domain.model.PackageEvent;
+import com.example.eventservice.domain.model.PackageEventEntity;
 import com.example.eventservice.application.service.EventService;
 import com.example.eventservice.application.service.PackageEventService;
 import com.example.eventservice.application.service.PackageService;
@@ -60,7 +60,7 @@ public class PackageEventController {
         );
     }
 
-    private PackageEventDTO enrichRelation(PackageEvent relation) {
+    private PackageEventDTO enrichRelation(PackageEventEntity relation) {
         PackageEventDTO dto = new PackageEventDTO();
 
         var pachet = relation.getPachet();
@@ -166,7 +166,7 @@ public class PackageEventController {
             throw new IllegalArgumentException("Evenimentul este deja asociat cu acest pachet.");
         }
 
-        PackageEvent relation = packageEventService.addEventToPackage(pachet, eveniment);
+        PackageEventEntity relation = packageEventService.addEventToPackage(pachet, eveniment);
         PackageEventDTO dto = enrichRelation(relation);
 
         return ResponseEntity.ok(

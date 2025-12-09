@@ -35,7 +35,11 @@ public class IdmServiceImpl extends IdmServiceGrpc.IdmServiceImplBase {
             builder.setSuccess(false)
                     .setMessage("Invalid credentials");
         } else {
-            String token = jwtUtil.generateToken(user.getId(), user.getRole());
+            String token = jwtUtil.generateToken(
+                    user.getId(),
+                    user.getRole(),
+                    user.getEmail()
+            );
             builder.setSuccess(true)
                     .setToken(token)
                     .setMessage("OK");
@@ -63,10 +67,12 @@ public class IdmServiceImpl extends IdmServiceGrpc.IdmServiceImplBase {
             DecodedJWT jwt = jwtUtil.validate(token);
             String sub = jwt.getSubject();
             String role = jwt.getClaim("role").asString();
+            String email = jwt.getClaim("email").asString();
 
             builder.setValid(true)
                     .setSub(sub)
                     .setRole(role)
+                    .setEmail(email != null ? email : "")
                     .setMessage("OK");
         } catch (JWTVerificationException ex) {
             tokenBlackList.blacklist(token);

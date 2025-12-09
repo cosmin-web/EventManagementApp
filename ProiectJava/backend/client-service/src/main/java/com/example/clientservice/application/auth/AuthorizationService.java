@@ -59,6 +59,8 @@ public class AuthorizationService {
             );
         }
 
-        return new AuthenticatedUser(userId, role, token);
+        String email = resp.getEmail();
+
+        return new AuthenticatedUser(userId, role, token, email);
     }
 }
