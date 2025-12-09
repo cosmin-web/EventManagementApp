@@ -183,4 +183,22 @@ public class ClientTicketsController {
                 .created(null)
                 .body(wrap(data, ticketLinks(email)));
     }
+
+    @Operation(summary = "Sterge un bilet din sistem si din clientii asociati")
+    @ApiResponse(responseCode = "204", description = "Biletul a fost sters.")
+    @DeleteMapping("/tickets/{cod}")
+    public ResponseEntity<Void> deleteTicketEverywhere(
+            @PathVariable String cod,
+            @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+
+        AuthenticatedUser current = authorizationService.requireUser(
+                authorizationHeader,
+                UserRole.ADMIN,
+                UserRole.OWNER_EVENT
+        );
+
+        ticketsService.deleteTicketEverywhere(cod, authorizationHeader);
+        return ResponseEntity.noContent().build();
+    }
+
 }

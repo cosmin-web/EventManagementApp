@@ -134,4 +134,26 @@ public class ClientTicketsService {
 
         return data;
     }
+
+    public void deleteTicketEverywhere(String cod, String authorizationHeader) {
+        eventApiClient.deleteTicket(cod, authorizationHeader);
+
+        List<ClientDocument> allClients = repo.findAll();
+
+        for (ClientDocument client : allClients) {
+            if (client.getBilete() == null || client.getBilete().isEmpty()) {
+                continue;
+            }
+
+            List<TicketRef> filtered = client.getBilete().stream()
+                    .filter(t -> !cod.equals(t.getCod()))
+                    .toList();
+
+            if (filtered.size() != client.getBilete().size()) {
+                client.setBilete(filtered);
+                repo.save(client);
+            }
+        }
+    }
+
 }

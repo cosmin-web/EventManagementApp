@@ -58,4 +58,14 @@ public class EventApiClient {
                 .map(WrappedTicketResponse::getData)
                 .block();
     }
+
+    public void deleteTicket(String cod, String authorizationHeader) {
+        eventWebClient.delete()
+                .uri(uri -> uri.path("/tickets/{cod}").build(cod))
+                .header("Authorization", authorizationHeader)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
 }
