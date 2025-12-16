@@ -12,7 +12,7 @@ services:
       MARIADB_PASSWORD: "${MARIADB_PASSWORD}"
     volumes:
       - mariadb_data:/var/lib/mysql
-      - ./db:/docker-entrypoint-initdb.d
+      - ./db:/docker-entrypoint-initdb.d:ro
 
   mongodb:
     image: mongo:7
@@ -39,9 +39,18 @@ services:
       SPRING_DATASOURCE_PASSWORD: "${MARIADB_PASSWORD}"
       IDM_HOST: "idm-service"
       IDM_PORT: "9090"
+      JAVA_TOOL_OPTIONS: "-Djava.io.tmpdir=/tmp"
     depends_on:
       - mariadb
       - idm-service
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+    init: true
 
   client-service:
     build:
@@ -56,10 +65,19 @@ services:
       CLIENT_EVENT_SERVICE_BASE_URL: "http://event-service:8080/api/event-manager"
       IDM_HOST: "idm-service"
       IDM_PORT: "9090"
+      JAVA_TOOL_OPTIONS: "-Djava.io.tmpdir=/tmp"
     depends_on:
       - mongodb
       - event-service
       - idm-service
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+    init: true
 
   idm-service:
     build:
@@ -71,6 +89,16 @@ services:
       - "9090:9090"
     depends_on:
       - mariadb
+    environment:
+      JAVA_TOOL_OPTIONS: "-Djava.io.tmpdir=/tmp"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+    init: true
 
 volumes:
   mariadb_data:
