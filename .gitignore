@@ -1,0 +1,9 @@
+ProiectJava/**/target/
+
+ProiectJava/**/.idea/
+ProiectJava/**/*.iml
+
+ProiectJava/**/.vscode/
+
+ProiectJava/backend/docker/.env
+

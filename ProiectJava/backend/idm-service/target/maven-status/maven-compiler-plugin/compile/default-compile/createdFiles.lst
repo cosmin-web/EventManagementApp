@@ -1,6 +1,0 @@
-com/example/idm/grpc/IdmServer.class
-com/example/idm/grpc/IdmServiceImpl.class
-com/example/idm/db/UserRepository.class
-com/example/idm/jwt/TokenBlackList.class
-com/example/idm/jwt/JwtUtil.class
-com/example/idm/db/User.class
