@@ -14,6 +14,8 @@ public class PackageEventDTO {
     private String eventName;
     private String eventLocation;
 
+    private String eventDescription;
+
     public PackageEventDTO() {}
 
     public PackageEventDTO(Integer packageId, Integer eventId) {
@@ -35,4 +37,7 @@ public class PackageEventDTO {
 
     public String getEventLocation() { return eventLocation; }
     public void setEventLocation(String eventLocation) { this.eventLocation = eventLocation; }
+
+    public String getEventDescription() { return eventDescription; }
+    public void setEventDescription(String eventDescription) { this.eventDescription = eventDescription; }
 }

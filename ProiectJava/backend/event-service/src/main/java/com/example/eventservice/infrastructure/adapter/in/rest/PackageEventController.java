@@ -73,6 +73,8 @@ public class PackageEventController {
         dto.setEventName(event.getNume());
         dto.setEventLocation(event.getLocatie());
 
+        dto.setEventDescription(event.getDescriere());
+
         return dto;
     }
 
@@ -112,12 +114,12 @@ public class PackageEventController {
             @PathVariable Integer packetId,
             @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
 
-        AuthenticatedUser current = authorizationService.requireUser(
-                authorizationHeader,
-                UserEntity.Role.ADMIN,
-                UserEntity.Role.OWNER_EVENT,
-                UserEntity.Role.CLIENT
-        );
+//        AuthenticatedUser current = authorizationService.requireUser(
+//                authorizationHeader,
+//                UserEntity.Role.ADMIN,
+//                UserEntity.Role.OWNER_EVENT,
+//                UserEntity.Role.CLIENT
+//        );
 
         PackageEntity pachet = packageService.getPackageById(packetId)
                 .orElseThrow(() -> new IllegalArgumentException("Pachetul nu exista"));

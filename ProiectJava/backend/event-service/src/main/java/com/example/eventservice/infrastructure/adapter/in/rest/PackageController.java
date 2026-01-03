@@ -78,12 +78,12 @@ public class PackageController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
 
-        AuthenticatedUser current = authorizationService.requireUser(
-                authorizationHeader,
-                UserEntity.Role.ADMIN,
-                UserEntity.Role.OWNER_EVENT,
-                UserEntity.Role.CLIENT
-        );
+//        AuthenticatedUser current = authorizationService.requireUser(
+//                authorizationHeader,
+//                UserEntity.Role.ADMIN,
+//                UserEntity.Role.OWNER_EVENT,
+//                UserEntity.Role.CLIENT
+//        );
 
         var resultPage = packageService.searchPackages(name, type, eventName, availableTickets, page, size);
 

@@ -1,9 +1,18 @@
-ProiectJava/**/target/
+node_modules/
+dist/
+package-lock.json
 
-ProiectJava/**/.idea/
-ProiectJava/**/*.iml
+target/
+*.class
+*.jar
+*.war
 
-ProiectJava/**/.vscode/
+.idea/
+*.iml
+.vscode/
+*.log
 
-ProiectJava/backend/docker/.env
+.DS_Store
+Thumbs.db
 
+.env

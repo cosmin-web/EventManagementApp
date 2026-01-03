@@ -1,0 +1,104 @@
+:root {
+  --bg-body: #f3f4f6;
+  --bg-card: #ffffff;
+  --primary: #4f46e5;
+  --text-main: #1f2937;
+  --border-color: #e5e7eb;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  line-height: 1.5;
+  padding-bottom: 50px;
+}
+
+/* Container principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Carduri (Fundal alb) */
+.card {
+  background: var(--bg-card);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.card.narrow {
+  max-width: 450px;
+  margin: 40px auto; /* Centrat */
+}
+
+/* Grid pentru Evenimente */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+/* Inputuri și Formulare */
+input, select, textarea {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: #fff;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+/* Butoane */
+button, .btn {
+  background-color: var(--primary);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+}
+
+button:hover { opacity: 0.9; }
+
+/* Navbar */
+.navbar {
+  background: #fff;
+  border-bottom: 1px solid var(--border-color);
+  padding: 15px 0;
+  margin-bottom: 30px;
+}
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-main);
+  margin-right: 20px;
+  font-weight: 500;
+}
+.nav-links a.logo {
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 1.2rem;
+}

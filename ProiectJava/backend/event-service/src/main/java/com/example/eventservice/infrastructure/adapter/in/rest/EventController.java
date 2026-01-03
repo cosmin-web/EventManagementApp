@@ -81,12 +81,12 @@ public class EventController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5", name = "items_per_page") int size) {
 
-        AuthenticatedUser current = authorizationService.requireUser(
-                authorizationHeader,
-                UserEntity.Role.ADMIN,
-                UserEntity.Role.OWNER_EVENT,
-                UserEntity.Role.CLIENT
-        );
+//        AuthenticatedUser current = authorizationService.requireUser(
+//                authorizationHeader,
+//                UserEntity.Role.ADMIN,
+//                UserEntity.Role.OWNER_EVENT,
+//                UserEntity.Role.CLIENT
+//        );
 
         var resultPage = eventService.searchEvents(name, location, availableTickets, page, size);
 
@@ -111,12 +111,12 @@ public class EventController {
             @PathVariable Integer id,
             @RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
 
-        AuthenticatedUser current = authorizationService.requireUser(
-                authorizationHeader,
-                UserEntity.Role.ADMIN,
-                UserEntity.Role.OWNER_EVENT,
-                UserEntity.Role.CLIENT
-        );
+//        AuthenticatedUser current = authorizationService.requireUser(
+//                authorizationHeader,
+//                UserEntity.Role.ADMIN,
+//                UserEntity.Role.OWNER_EVENT,
+//                UserEntity.Role.CLIENT
+//        );
 
         return eventService.getEventById(id)
                 .map(event -> ResponseEntity.ok(wrap(enrichEvent(event), eventLinks(event.getId()))))
